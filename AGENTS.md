@@ -6,7 +6,7 @@ ModernTinkers is a single-bundle port and consolidation of Tinkers' Construct an
 
 The goal is a coherent modern implementation, not a collection of independently shipped legacy mods. Internal packages or modules may be used for ownership and maintainability, but the intended player-facing result is one bundle with consistent registration, configuration, resources, and compatibility behavior.
 
-The repository is currently in the reference and bootstrap phase. The legacy source material is present under `References/`; new implementation belongs under `src/` as the project is built out.
+The repository now has an initial Gradle/NeoForge bootstrap. Feature implementation is still in the reference and planning phase: legacy source material is present under `References/`, while all new implementation belongs under `src/`.
 
 ## Non-negotiable source boundary
 
@@ -71,16 +71,35 @@ When combining companion content, resolve collisions intentionally:
 - keep optional integrations isolated and safe when the other mod is absent; and
 - do not add unrelated features merely because they exist in a reference project.
 
+## Versioning and artifact naming
+
+`gradle.properties` is the source of truth for `mod_version`. The current project version is `1.2.3`.
+
+Every repository change, including documentation, configuration, and new files that will become part of the project, must increment the build number before completion. For ordinary changes, increment the rightmost version component: `1.2.3` becomes `1.2.4`. Never reuse a version. A single cohesive task that changes multiple files receives one version bump. Only use a major or minor-version change when the user explicitly requests one; otherwise the rightmost component is the build number.
+
+Every build must produce this exact filename pattern:
+
+```text
+build/libs/ModernTinkers-1.21.1-<current-version>-NeoForge.jar
+```
+
+With the current version, the expected artifact is `ModernTinkers-1.21.1-1.2.3-NeoForge.jar`. The artifact base name, Minecraft version, current version, and `NeoForge` suffix are intentional and must not revert to Gradle's default `moderntinkers-<version>.jar` naming. Keep the artifact name in `build.gradle` and the version in `gradle.properties` synchronized.
+
+Before handoff, run a fresh build after the version bump and verify that exactly the current-version artifact exists in `build/libs/`. Do not claim completion from an older or differently named JAR.
+
 ## Repository layout
 
 Use this ownership model as the repository grows:
 
 ```text
 ModernTinkers/
-├── AGENTS.md             # Instructions for agents and contributors
-├── README.md             # Project overview and current status
-├── References/           # Legacy source material; read-only
-└── src/                  # New NeoForge 1.21.1 implementation
+├── AGENTS.md                         # Instructions for agents and contributors
+├── README.md                         # Project overview and current status
+├── build.gradle                      # NeoForge ModDevGradle build
+├── gradle.properties                 # Target and mod metadata
+├── gradle/wrapper/                   # Checked-in Gradle Wrapper
+├── References/                       # Legacy source material; read-only
+└── src/                              # New NeoForge 1.21.1 implementation
     ├── main/
     │   ├── java/         # Java implementation
     │   └── resources/    # Mod metadata, data, assets, and translations
@@ -91,17 +110,17 @@ If the eventual Gradle layout differs, update the documentation to reflect the a
 
 ## Validation
 
-The repository does not yet contain a build scaffold, so do not claim that a build or test command exists until it is added and verified.
+The repository contains an initial build scaffold using Java 21, Gradle Wrapper 9.2.1, ModDevGradle 2.0.143, and NeoForge 21.1.240 for Minecraft 1.21.1. Keep these versions in sync with `gradle.properties` and the wrapper configuration when changing the target.
 
 Once the NeoForge project is scaffolded, prefer the repository's Gradle wrapper:
 
 ```text
-gradlew.bat build
+gradlew.bat clean build
 gradlew.bat test
 gradlew.bat runClient
 ```
 
-Use only tasks that the project actually defines. Build and unit-test success is not sufficient evidence for registration, client rendering, recipe discovery, multiplayer behavior, or compatibility.
+For every completed repository change, increment `mod_version` and run `gradlew.bat clean build --console=plain --no-daemon`. Use only tasks that the project actually defines. Build and unit-test success is not sufficient evidence for registration, client rendering, recipe discovery, multiplayer behavior, or compatibility.
 
 For a meaningful port milestone, validate as applicable:
 
@@ -117,11 +136,22 @@ Separate automated evidence from manual gameplay, visual, and multiplayer checks
 ## Change and review hygiene
 
 - Check `git status` before editing and preserve unrelated user changes.
+- Read `Docs/TASK.md` before starting every task. Treat active instructions and task boundaries there as authoritative; if it is empty, proceed using this file and the user's request without inventing task scope.
 - Keep changes focused on the requested port slice.
 - Never stage or commit changes from `References/` as implementation edits.
 - Review the final diff and verify that generated output, IDE files, and local caches are not included.
 - Keep source provenance and license notices close to imported or substantially adapted material.
 - Update `README.md` when the project status, supported content, build workflow, or ownership boundary changes.
+
+## Mandatory project log updates
+
+Every completed task or change, including code, configuration, build, documentation, and repository-maintenance work, must append one new dated entry to each of these files:
+
+- `Docs/CHANGELOG.md` — concise summary of what changed and the player or repository-facing result.
+- `Docs/TRACELOG.md` — implementation evidence, checks run, relevant paths, and any known gaps.
+- `Docs/SUGGESTIONS.md` — one actionable follow-up, or an explicit `No new suggestions` entry when no follow-up is warranted.
+
+Append to the existing files; do not replace or rewrite earlier entries. Match an established format when one exists. If a log is empty, use a compact dated Markdown entry with the task summary. Do not claim a build, gameplay check, visual check, or server check that was not actually performed. Before handing work back, verify that all three entries exist and mention any pending validation or follow-up.
 
 Definition of done for a ported feature:
 

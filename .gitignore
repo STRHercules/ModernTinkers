@@ -1,1 +1,33 @@
-References/
+# Legacy source snapshots are research-only and intentionally kept out of the repository index.
+/References/
+
+# Gradle
+/.gradle/
+/build/
+/mcmodsrepo/
+/gradle-user-home/
+
+# NeoForge development runs and generated runtime data
+/run/
+/logs/
+/crash-reports/
+/local/
+hs_err_pid*.log
+replay_pid*.log
+user_jvm_args.txt
+
+# IDEs and local tooling
+/.idea/
+*.iml
+/.classpath
+/.project
+/.settings/
+/.vscode/
+/out/
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+
+# Keep the checked-in Gradle Wrapper executable JAR even if a broad JAR rule is added later.
+!/gradle/wrapper/gradle-wrapper.jar

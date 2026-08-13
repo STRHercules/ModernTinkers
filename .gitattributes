@@ -1,2 +1,36 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Normalize text files to LF in the repository.
+* text=auto eol=lf
+
+# Keep Windows launchers usable on Windows checkouts.
+*.bat text eol=crlf
+
+# Common source and configuration formats.
+*.java text diff=java
+*.gradle text
+*.gradle.kts text
+*.properties text
+*.toml text
+*.json text
+*.mcmeta text
+*.md text
+*.txt text
+*.xml text
+*.yml text
+*.yaml text
+
+# Binary assets and archives.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ogg binary
+*.wav binary
+*.mp3 binary
+*.jar binary
+*.zip binary
+*.7z binary
+*.xcf binary
+
+# The wrapper JAR is a binary executable dependency, not source.
+gradle/wrapper/gradle-wrapper.jar binary
