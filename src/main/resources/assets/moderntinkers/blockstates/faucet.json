@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "facing=down,powered=false": { "model": "moderntinkers:block/smeltery/faucet" },
+    "facing=down,powered=true": { "model": "moderntinkers:block/smeltery/faucet", "y": 180 },
+    "facing=north,powered=false": { "model": "moderntinkers:block/smeltery/faucet" },
+    "facing=north,powered=true": { "model": "moderntinkers:block/smeltery/faucet", "y": 180 },
+    "facing=south,powered=false": { "model": "moderntinkers:block/smeltery/faucet", "y": 180 },
+    "facing=south,powered=true": { "model": "moderntinkers:block/smeltery/faucet", "y": 0 },
+    "facing=west,powered=false": { "model": "moderntinkers:block/smeltery/faucet", "y": 270 },
+    "facing=west,powered=true": { "model": "moderntinkers:block/smeltery/faucet", "y": 90 },
+    "facing=east,powered=false": { "model": "moderntinkers:block/smeltery/faucet", "y": 90 },
+    "facing=east,powered=true": { "model": "moderntinkers:block/smeltery/faucet", "y": 270 }
+  }
+}

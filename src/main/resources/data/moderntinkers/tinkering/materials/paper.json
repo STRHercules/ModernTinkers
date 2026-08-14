@@ -1,0 +1,9 @@
+{
+  "harvest_tier": "wood",
+  "head_durability": 50,
+  "mining_speed": 3.0,
+  "head_attack_damage": 0.0,
+  "item": "minecraft:paper",
+  "item_units": 9,
+  "color": "#F4F0DC"
+}

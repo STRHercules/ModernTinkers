@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["S S", " K ", "S S"],
+  "key": {
+    "S": {"item": "moderntinkers:slimesteel_ingot"},
+    "K": {"item": "moderntinkers:knightslime_ingot"}
+  },
+  "result": {"id": "moderntinkers:overshield"}
+}

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [" G ", "GSG", " G "],
+  "key": {
+    "G": {"item": "minecraft:gold_nugget"},
+    "S": {"item": "minecraft:sand"}
+  },
+  "result": {"id": "moderntinkers:nugget_cast"}
+}

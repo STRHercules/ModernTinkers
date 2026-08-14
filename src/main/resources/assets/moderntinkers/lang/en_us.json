@@ -1,0 +1,457 @@
+{
+  "item.moderntinkers.copper_nugget": "Copper Nugget",
+  "item.moderntinkers.netherite_nugget": "Netherite Nugget",
+  "item.moderntinkers.debris_nugget": "Debris Scrap",
+  "item.moderntinkers.debris_nugget.tooltip": "Small shard of ancient netherite, possibly can be melted to salvage",
+  "item.moderntinkers.earth_slime_crystal": "Earth Slime Crystal",
+  "item.moderntinkers.sky_slime_crystal": "Sky Slime Crystal",
+  "item.moderntinkers.ichor_slime_crystal": "Ichor Slime Crystal",
+  "item.moderntinkers.ender_slime_crystal": "Ender Slime Crystal",
+  "item.moderntinkers.necrotic_bone": "Necrotic Bone",
+  "item.moderntinkers.necrotic_bone.tooltip": "Dropped from wither skeletons",
+  "item.moderntinkers.venombone": "Venombone",
+  "item.moderntinkers.blazing_bone": "Blazing Bone",
+  "item.moderntinkers.necronium_bone": "Necronium Bone",
+  "itemGroup.moderntinkers.general": "Modern Tinkers' General Items",
+  "block.moderntinkers.cobalt_block": "Block of Cobalt",
+  "item.moderntinkers.cobalt_ingot": "Cobalt Ingot",
+  "item.moderntinkers.cobalt_nugget": "Cobalt Nugget",
+  "block.moderntinkers.steel_block": "Block of Steel",
+  "item.moderntinkers.steel_ingot": "Steel Ingot",
+  "item.moderntinkers.steel_nugget": "Steel Nugget",
+  "block.moderntinkers.slimesteel_block": "Block of Slimesteel",
+  "item.moderntinkers.slimesteel_ingot": "Slimesteel Ingot",
+  "item.moderntinkers.slimesteel_nugget": "Slimesteel Nugget",
+  "block.moderntinkers.amethyst_bronze_block": "Block of Amethyst Bronze",
+  "item.moderntinkers.amethyst_bronze_ingot": "Amethyst Bronze Ingot",
+  "item.moderntinkers.amethyst_bronze_nugget": "Amethyst Bronze Nugget",
+  "block.moderntinkers.rose_gold_block": "Block of Rose Gold",
+  "item.moderntinkers.rose_gold_ingot": "Rose Gold Ingot",
+  "item.moderntinkers.rose_gold_nugget": "Rose Gold Nugget",
+  "block.moderntinkers.pig_iron_block": "Block of Pig Iron",
+  "item.moderntinkers.pig_iron_ingot": "Pig Iron Ingot",
+  "item.moderntinkers.pig_iron_nugget": "Pig Iron Nugget",
+  "block.moderntinkers.cinderslime_block": "Block of Cinderslime",
+  "item.moderntinkers.cinderslime_ingot": "Cinderslime Ingot",
+  "item.moderntinkers.cinderslime_nugget": "Cinderslime Nugget",
+  "block.moderntinkers.queens_slime_block": "Block of Queen's Slime",
+  "item.moderntinkers.queens_slime_ingot": "Queen's Slime Ingot",
+  "item.moderntinkers.queens_slime_nugget": "Queen's Slime Nugget",
+  "block.moderntinkers.manyullyn_block": "Block of Manyullyn",
+  "item.moderntinkers.manyullyn_ingot": "Manyullyn Ingot",
+  "item.moderntinkers.manyullyn_nugget": "Manyullyn Nugget",
+  "block.moderntinkers.hepatizon_block": "Block of Hepatizon",
+  "item.moderntinkers.hepatizon_ingot": "Hepatizon Ingot",
+  "item.moderntinkers.hepatizon_nugget": "Hepatizon Nugget",
+  "block.moderntinkers.knightmetal_block": "Block of Knightmetal",
+  "item.moderntinkers.knightmetal_ingot": "Knightmetal Ingot",
+  "item.moderntinkers.knightmetal_nugget": "Knightmetal Nugget",
+  "block.moderntinkers.knightslime_block": "Block of Knightslime",
+  "item.moderntinkers.knightslime_ingot": "Knightslime Ingot",
+  "item.moderntinkers.knightslime_nugget": "Knightslime Nugget",
+  "block.moderntinkers.soulsteel_block": "Block of Soulsteel",
+  "item.moderntinkers.soulsteel_ingot": "Soulsteel Ingot",
+  "item.moderntinkers.soulsteel_nugget": "Soulsteel Nugget",
+  "block.moderntinkers.nahuatl": "Nahuatl Planks",
+  "block.moderntinkers.blazewood": "Blazewood",
+  "block.moderntinkers.fake_storage_block": "Block",
+  "item.moderntinkers.fake_ingot": "Ingot",
+  "item.moderntinkers.repair_kit": "Repair Kit",
+  "item.moderntinkers.pick_head": "Pick Head",
+  "item.moderntinkers.hammer_head": "Hammer Head",
+  "item.moderntinkers.small_axe_head": "Small Axe Head",
+  "item.moderntinkers.broad_axe_head": "Broad Axe Head",
+  "item.moderntinkers.small_blade": "Small Blade",
+  "item.moderntinkers.broad_blade": "Broad Blade",
+  "item.moderntinkers.adze_head": "Adze Head",
+  "item.moderntinkers.large_plate": "Large Plate",
+  "item.moderntinkers.bow_limb": "Bow Limb",
+  "item.moderntinkers.bow_grip": "Bow Grip",
+  "item.moderntinkers.bowstring": "Bowstring",
+  "item.moderntinkers.arrow_head": "Arrow Head",
+  "item.moderntinkers.arrow_shaft": "Arrow Shaft",
+  "item.moderntinkers.fletching": "Arrow Fletching",
+  "item.moderntinkers.tool_binding": "Tool Binding",
+  "item.moderntinkers.tough_binding": "Tough Collar",
+  "item.moderntinkers.tool_handle": "Tool Handle",
+  "item.moderntinkers.tough_handle": "Tough Handle",
+  "item.moderntinkers.plating_helmet": "Helmet Plating",
+  "item.moderntinkers.plating_chestplate": "Chest Plating",
+  "item.moderntinkers.plating_leggings": "Leg Plating",
+  "item.moderntinkers.plating_boots": "Boot Plating",
+  "item.moderntinkers.maille": "Maille",
+  "item.moderntinkers.shield_core": "Shield Core",
+  "item.moderntinkers.skull": "Skull",
+  "item.moderntinkers.ribcage": "Ribcage",
+  "item.moderntinkers.shell": "Shell",
+  "item.moderntinkers.laces": "Laces",
+  "item.moderntinkers.slime": "Slime Coating",
+  "item.moderntinkers.pattern.unselected": "Sneak-use to select a part",
+  "item.moderntinkers.pattern.selected": "Selected: %s",
+  "item.moderntinkers.silky_cloth": "Silky Cloth",
+  "item.moderntinkers.silky_cloth.tooltip": "Prevents a tool from damaging block drops",
+  "item.moderntinkers.dragon_scale": "Dragon Scale",
+  "item.moderntinkers.dragon_scale.tooltip": "Blasted off an ender dragon",
+  "item.moderntinkers.emerald_reinforcement": "Emerald Reinforcement",
+  "item.moderntinkers.emerald_reinforcement.tooltip": "Reduces chance of a tool taking damage",
+  "item.moderntinkers.slimesteel_reinforcement": "Slimesteel Reinforcement",
+  "item.moderntinkers.slimesteel_reinforcement.tooltip": "Increases slimesteel capacity",
+  "item.moderntinkers.seared_reinforcement": "Seared Reinforcement",
+  "item.moderntinkers.seared_reinforcement.tooltip": "Increases armor resistance against fire",
+  "item.moderntinkers.iron_reinforcement": "Iron Reinforcement",
+  "item.moderntinkers.iron_reinforcement.tooltip": "Increases armor resistance against projectiles",
+  "item.moderntinkers.obsidian_reinforcement": "Obsidian Reinforcement",
+  "item.moderntinkers.obsidian_reinforcement.tooltip": "Increases armor resistance against explosions",
+  "item.moderntinkers.gold_reinforcement": "Gold Reinforcement",
+  "item.moderntinkers.gold_reinforcement.tooltip": "Increases armor resistance against magic",
+  "item.moderntinkers.cobalt_reinforcement": "Cobalt Reinforcement",
+  "item.moderntinkers.cobalt_reinforcement.tooltip": "Increases armor resistance against general attacks",
+  "item.moderntinkers.modifier_crystal": "Modifier Crystal",
+  "item.moderntinkers.modifier_crystal.tooltip": "Applies one modifier level when the modifier system is available",
+  "item.moderntinkers.modifier_crystal.format": "%s Crystal",
+  "item.moderntinkers.modifier_crystal.empty": "Unconfigured modifier crystal",
+  "item.moderntinkers.modifier_crystal.apply": "Applies %s",
+  "block.moderntinkers.crafting_station": "Crafting Station",
+  "block.moderntinkers.tinker_station": "Tinker Station",
+  "block.moderntinkers.part_builder": "Part Builder",
+  "block.moderntinkers.modifier_worktable": "Modifier Worktable",
+  "block.moderntinkers.tinkers_anvil": "Tinker's Anvil",
+  "block.moderntinkers.scorched_anvil": "Scorched Anvil",
+  "block.moderntinkers.seared_tank": "Seared Tank",
+  "block.moderntinkers.scorched_tank": "Scorched Tank",
+  "block.moderntinkers.seared_drain": "Seared Drain",
+  "block.moderntinkers.scorched_drain": "Scorched Drain",
+  "block.moderntinkers.seared_duct": "Seared Duct",
+  "block.moderntinkers.scorched_duct": "Scorched Duct",
+  "block.moderntinkers.seared_channel": "Seared Channel",
+  "block.moderntinkers.scorched_channel": "Scorched Channel",
+  "block.moderntinkers.copper_gauge": "Copper Gauge",
+  "block.moderntinkers.obsidian_gauge": "Obsidian Gauge",
+  "block.moderntinkers.seared_casting_tank": "Seared Casting Tank",
+  "block.moderntinkers.heater": "Smeltery Heater",
+  "block.moderntinkers.faucet": "Smeltery Faucet",
+  "block.moderntinkers.seared_bricks": "Seared Bricks",
+  "block.moderntinkers.scorched_bricks": "Scorched Bricks",
+  "block.moderntinkers.smeltery_controller": "Smeltery Controller",
+  "block.moderntinkers.foundry_controller": "Foundry Controller",
+  "container.moderntinkers.part_builder": "Part Builder",
+  "itemGroup.moderntinkers.materials": "Modern Tinkers' Materials",
+  "itemGroup.moderntinkers.tool_parts": "Modern Tinkers' Parts",
+  "itemGroup.moderntinkers.modifiers": "Modern Tinkers' Modifiers",
+  "itemGroup.moderntinkers.tables": "Modern Tinkers' Tables",
+  "itemGroup.moderntinkers.tools": "Modern Tinkers' Tools",
+  "container.moderntinkers.tinker_station": "Tinker Station",
+  "container.moderntinkers.modifier_worktable": "Modifier Worktable",
+  "item.moderntinkers.part.material": "Material: %s",
+  "item.moderntinkers.tool_name": "%s %s",
+  "item.moderntinkers.tool.head": "Head: %s",
+  "item.moderntinkers.tool.handle": "Handle: %s",
+  "item.moderntinkers.tool.stats": "Base durability: %s | Mining speed: %s",
+  "item.moderntinkers.tool.trait": "Trait: %s",
+  "item.moderntinkers.tool.modifier": "Modifier: %s %s",
+  "item.moderntinkers.tool.experience": "Stored experience: %s",
+  "item.moderntinkers.pickaxe": "Pickaxe",
+  "item.moderntinkers.sledge_hammer": "Sledge Hammer",
+  "item.moderntinkers.hand_axe": "Hand Axe",
+  "item.moderntinkers.broad_axe": "Broad Axe",
+  "item.moderntinkers.mattock": "Mattock",
+  "item.moderntinkers.sword": "Sword",
+  "item.moderntinkers.cleaver": "Cleaver",
+  "item.moderntinkers.longbow": "Longbow",
+  "item.moderntinkers.crossbow": "Crossbow",
+  "item.moderntinkers.javelin": "Javelin",
+  "item.moderntinkers.shuriken": "Shuriken",
+  "item.moderntinkers.fishing_rod": "Fishing Rod",
+  "item.moderntinkers.staff": "Staff",
+  "material.moderntinkers.iron": "Iron",
+  "material.moderntinkers.wood": "Wood",
+  "material.moderntinkers.flint": "Flint",
+  "material.moderntinkers.bone": "Bone",
+  "material.moderntinkers.paper": "Paper",
+  "material.moderntinkers.gold": "Gold",
+  "material.moderntinkers.copper": "Copper",
+  "material.moderntinkers.netherite": "Netherite",
+  "material.moderntinkers.cobalt": "Cobalt",
+  "material.moderntinkers.steel": "Steel",
+  "material.moderntinkers.slimesteel": "Slimesteel",
+  "material.moderntinkers.amethyst_bronze": "Amethyst Bronze",
+  "material.moderntinkers.rose_gold": "Rose Gold",
+  "material.moderntinkers.pig_iron": "Pig Iron",
+  "material.moderntinkers.cinderslime": "Cinderslime",
+  "material.moderntinkers.queens_slime": "Queen's Slime",
+  "material.moderntinkers.manyullyn": "Manyullyn",
+  "material.moderntinkers.hepatizon": "Hepatizon",
+  "material.moderntinkers.knightmetal": "Knightmetal",
+  "material.moderntinkers.knightslime": "Knightslime",
+  "material.moderntinkers.blood": "Blood",
+  "material.moderntinkers.soulsteel": "Soulsteel",
+  "material.moderntinkers.nahuatl": "Nahuatl",
+  "material.moderntinkers.blazewood": "Blazewood",
+  "item.moderntinkers.pickadze": "Pickadze",
+  "item.moderntinkers.excavator": "Excavator",
+  "item.moderntinkers.vein_hammer": "Vein Hammer",
+  "item.moderntinkers.kama": "Kama",
+  "item.moderntinkers.scythe": "Scythe",
+  "item.moderntinkers.dagger": "Dagger",
+  "item.moderntinkers.throwing_axe": "Throwing Axe",
+  "item.moderntinkers.flint_and_brick": "Flint and Brick",
+  "item.moderntinkers.sky_staff": "Sky Staff",
+  "item.moderntinkers.earth_staff": "Earth Staff",
+  "item.moderntinkers.ichor_staff": "Ichor Staff",
+  "item.moderntinkers.ender_staff": "Ender Staff",
+  "item.moderntinkers.melting_pan": "Melting Pan",
+  "item.moderntinkers.war_pick": "War Pick",
+  "item.moderntinkers.battlesign": "Battlesign",
+  "item.moderntinkers.swasher": "Swasher",
+  "item.moderntinkers.minotaur_axe": "Minotaur Axe",
+  "block.moderntinkers.melter": "Melter",
+  "block.moderntinkers.casting_table": "Casting Table",
+  "block.moderntinkers.casting_basin": "Casting Basin",
+  "block.moderntinkers.alloyer": "Alloyer",
+  "container.moderntinkers.melter": "Melter",
+  "container.moderntinkers.casting_table": "Casting Table",
+  "container.moderntinkers.casting_basin": "Casting Basin",
+  "container.moderntinkers.alloyer": "Alloyer",
+  "container.moderntinkers.smeltery": "Smeltery",
+  "gui.moderntinkers.smeltery.formed": "Formed",
+  "gui.moderntinkers.smeltery.unformed": "Unformed",
+  "container.moderntinkers.tinkers_anvil": "Tinkers' Anvil",
+  "container.moderntinkers.scorched_anvil": "Scorched Anvil",
+  "itemGroup.moderntinkers.smeltery": "Modern Tinkers' Smeltery",
+  "item.moderntinkers.cast.form": "Cast: %s",
+  "item.moderntinkers.cast.part": "Part: %s",
+  "item.moderntinkers.cast.disposable": "Single-use sand cast",
+  "item.moderntinkers.redstone": "Redstone Modifier",
+  "item.moderntinkers.redstone.tooltip": "Increases mining speed",
+  "item.moderntinkers.quartz": "Quartz Modifier",
+  "item.moderntinkers.quartz.tooltip": "Increases attack damage",
+  "item.moderntinkers.fiery": "Fiery Modifier",
+  "item.moderntinkers.fiery.tooltip": "Sets struck enemies on fire",
+  "item.moderntinkers.necrotic": "Necrotic Modifier",
+  "item.moderntinkers.necrotic.tooltip": "Heals the wielder on hit",
+  "item.moderntinkers.knockback": "Knockback Modifier",
+  "item.moderntinkers.knockback.tooltip": "Knocks enemies away",
+  "item.moderntinkers.autosmelt": "Autosmelt Modifier",
+  "item.moderntinkers.autosmelt.tooltip": "Smelts compatible block drops",
+  "item.moderntinkers.haste": "Haste Modifier",
+  "item.moderntinkers.haste.tooltip": "Improves mining speed",
+  "item.moderntinkers.fortune": "Fortune Modifier",
+  "item.moderntinkers.fortune.tooltip": "Improves block drops",
+  "item.moderntinkers.luck": "Luck Modifier",
+  "item.moderntinkers.luck.tooltip": "Improves fishing luck",
+  "item.moderntinkers.looting": "Looting Modifier",
+  "item.moderntinkers.looting.tooltip": "Improves mob drops",
+  "item.moderntinkers.sharpness": "Sharpness Modifier",
+  "item.moderntinkers.sharpness.tooltip": "Increases attack damage",
+  "item.moderntinkers.smite": "Smite Modifier",
+  "item.moderntinkers.smite.tooltip": "Deals bonus damage to undead",
+  "item.moderntinkers.bane_of_arthropods": "Bane of Arthropods Modifier",
+  "item.moderntinkers.bane_of_arthropods.tooltip": "Deals bonus damage to arthropods",
+  "item.moderntinkers.beheading": "Beheading Modifier",
+  "item.moderntinkers.beheading.tooltip": "Improves head drops",
+  "item.moderntinkers.mending": "Mending Modifier",
+  "item.moderntinkers.mending.tooltip": "Repairs the tool with experience",
+  "item.moderntinkers.experience": "Experience Modifier",
+  "item.moderntinkers.experience.tooltip": "Stores experience from use",
+  "item.moderntinkers.expanded": "Expanded",
+  "item.moderntinkers.expanded.tooltip": "Expands area-of-effect mining",
+  "item.moderntinkers.spitting": "Spitting Modifier",
+  "item.moderntinkers.spitting.tooltip": "Charges the tool to launch fluid effects",
+  "item.moderntinkers.spilling": "Spilling Modifier",
+  "item.moderntinkers.spilling.tooltip": "Applies stored fluid effects on hit",
+  "item.moderntinkers.overshield": "Overshield",
+  "item.moderntinkers.overshield.tooltip": "Consumes overslime to reduce incoming damage",
+  "fluid.moderntinkers.molten_iron": "Molten Iron",
+  "fluid.moderntinkers.molten_gold": "Molten Gold",
+  "fluid.moderntinkers.molten_copper": "Molten Copper",
+  "fluid.moderntinkers.molten_cobalt": "Molten Cobalt",
+  "fluid.moderntinkers.molten_steel": "Molten Steel",
+  "fluid.moderntinkers.molten_slimesteel": "Molten Slimesteel",
+  "fluid.moderntinkers.molten_amethyst_bronze": "Molten Amethyst Bronze",
+  "fluid.moderntinkers.molten_rose_gold": "Molten Rose Gold",
+  "fluid.moderntinkers.molten_pig_iron": "Molten Pig Iron",
+  "fluid.moderntinkers.molten_cinderslime": "Molten Cinderslime",
+  "fluid.moderntinkers.molten_queens_slime": "Molten Queen's Slime",
+  "fluid.moderntinkers.molten_manyullyn": "Molten Manyullyn",
+  "fluid.moderntinkers.molten_hepatizon": "Molten Hepatizon",
+  "fluid.moderntinkers.molten_knightmetal": "Molten Knightmetal",
+  "fluid.moderntinkers.molten_knightslime": "Molten Knightslime",
+  "fluid.moderntinkers.molten_soulsteel": "Molten Soulsteel",
+  "fluid.moderntinkers.molten_netherite": "Molten Netherite",
+  "fluid.moderntinkers.seared_stone": "Seared Stone",
+  "fluid.moderntinkers.scorched_stone": "Scorched Stone"
+  ,"fluid.moderntinkers.molten_debris": "Molten Debris"
+  ,"fluid.moderntinkers.molten_amethyst": "Molten Amethyst"
+  ,"fluid.moderntinkers.molten_quartz": "Molten Quartz"
+  ,"fluid.moderntinkers.molten_sky_slime": "Molten Sky Slime"
+  ,"fluid.moderntinkers.molten_blood": "Molten Blood"
+  ,"fluid.moderntinkers.molten_magma": "Molten Magma"
+  ,"fluid.moderntinkers.molten_meat_soup": "Molten Meat Soup"
+  ,"fluid.moderntinkers.molten_honey": "Molten Honey"
+  ,"fluid.moderntinkers.molten_ender_slime": "Molten Ender Slime"
+  ,"fluid.moderntinkers.molten_obsidian": "Molten Obsidian"
+  ,"fluid.moderntinkers.molten_ichor": "Molten Ichor"
+  ,"item.moderntinkers.tool.modifier_slots": "Modifier slots: %s/%s"
+  ,"item.moderntinkers.tool.overslime": "Overslime: %s/%s"
+  ,"item.moderntinkers.fluid_remainder": "Fluid Remainder"
+  ,"item.moderntinkers.fluid_remainder.contents": "%s mB of %s"
+  ,"item.moderntinkers.armor_name": "%s %s"
+  ,"item.moderntinkers.armor_helmet": "Helmet"
+  ,"item.moderntinkers.armor_chestplate": "Chestplate"
+  ,"item.moderntinkers.armor_leggings": "Leggings"
+  ,"item.moderntinkers.armor_boots": "Boots"
+  ,"item.moderntinkers.shield": "Shield"
+  ,"item.moderntinkers.armor.material": "Material: %s"
+  ,"item.moderntinkers.tinkers_helmet": "Tinkers' Helmet"
+  ,"item.moderntinkers.tinkers_chestplate": "Tinkers' Chestplate"
+  ,"item.moderntinkers.tinkers_leggings": "Tinkers' Leggings"
+  ,"item.moderntinkers.tinkers_boots": "Tinkers' Boots"
+  ,"item.moderntinkers.travelers_helmet": "Traveler's Helmet"
+  ,"item.moderntinkers.travelers_chestplate": "Traveler's Chestplate"
+  ,"item.moderntinkers.travelers_leggings": "Traveler's Leggings"
+  ,"item.moderntinkers.travelers_boots": "Traveler's Boots"
+  ,"item.moderntinkers.plate_helmet": "Plate Helmet"
+  ,"item.moderntinkers.plate_chestplate": "Plate Chestplate"
+  ,"item.moderntinkers.plate_leggings": "Plate Leggings"
+  ,"item.moderntinkers.plate_boots": "Plate Boots"
+  ,"item.moderntinkers.slime_helmet": "Slime Helmet"
+  ,"item.moderntinkers.slimy_chestplate": "Slimy Chestplate"
+  ,"item.moderntinkers.slime_leggings": "Slime Leggings"
+  ,"item.moderntinkers.slime_boots": "Slime Boots"
+  ,"item.moderntinkers.slime_wings": "Slime Wings"
+  ,"item.moderntinkers.armor.secondary": "Secondary material: %s"
+  ,"item.moderntinkers.travelers_shield": "Traveler's Shield"
+  ,"item.moderntinkers.plate_shield": "Plate Shield"
+  ,"item.moderntinkers.arrow": "Tinkers' Arrow"
+  ,"item.moderntinkers.arrow_name": "%s Arrow"
+  ,"block.moderntinkers.sky_slime": "Sky Slime"
+  ,"block.moderntinkers.ichor_slime": "Ichor Slime"
+  ,"block.moderntinkers.ender_slime": "Ender Slime"
+  ,"block.moderntinkers.blood_slime": "Blood Slime"
+  ,"block.moderntinkers.earth_slime_crystal_block": "Earth Slime Crystal Block"
+  ,"block.moderntinkers.budding_earth_slime_crystal": "Budding Earth Slime Crystal"
+  ,"block.moderntinkers.small_earth_slime_crystal_bud": "Small Earth Slime Crystal Bud"
+  ,"block.moderntinkers.medium_earth_slime_crystal_bud": "Medium Earth Slime Crystal Bud"
+  ,"block.moderntinkers.large_earth_slime_crystal_bud": "Large Earth Slime Crystal Bud"
+  ,"block.moderntinkers.earth_slime_crystal_cluster": "Earth Slime Crystal Cluster"
+  ,"block.moderntinkers.sky_slime_crystal_block": "Sky Slime Crystal Block"
+  ,"block.moderntinkers.budding_sky_slime_crystal": "Budding Sky Slime Crystal"
+  ,"block.moderntinkers.small_sky_slime_crystal_bud": "Small Sky Slime Crystal Bud"
+  ,"block.moderntinkers.medium_sky_slime_crystal_bud": "Medium Sky Slime Crystal Bud"
+  ,"block.moderntinkers.large_sky_slime_crystal_bud": "Large Sky Slime Crystal Bud"
+  ,"block.moderntinkers.sky_slime_crystal_cluster": "Sky Slime Crystal Cluster"
+  ,"block.moderntinkers.ichor_slime_crystal_block": "Ichor Slime Crystal Block"
+  ,"block.moderntinkers.budding_ichor_slime_crystal": "Budding Ichor Slime Crystal"
+  ,"block.moderntinkers.small_ichor_slime_crystal_bud": "Small Ichor Slime Crystal Bud"
+  ,"block.moderntinkers.medium_ichor_slime_crystal_bud": "Medium Ichor Slime Crystal Bud"
+  ,"block.moderntinkers.large_ichor_slime_crystal_bud": "Large Ichor Slime Crystal Bud"
+  ,"block.moderntinkers.ichor_slime_crystal_cluster": "Ichor Slime Crystal Cluster"
+  ,"block.moderntinkers.ender_slime_crystal_block": "Ender Slime Crystal Block"
+  ,"block.moderntinkers.budding_ender_slime_crystal": "Budding Ender Slime Crystal"
+  ,"block.moderntinkers.small_ender_slime_crystal_bud": "Small Ender Slime Crystal Bud"
+  ,"block.moderntinkers.medium_ender_slime_crystal_bud": "Medium Ender Slime Crystal Bud"
+  ,"block.moderntinkers.large_ender_slime_crystal_bud": "Large Ender Slime Crystal Bud"
+  ,"block.moderntinkers.ender_slime_crystal_cluster": "Ender Slime Crystal Cluster"
+  ,"block.moderntinkers.earth_congealed_slime": "Earth Congealed Slime"
+  ,"block.moderntinkers.sky_congealed_slime": "Sky Congealed Slime"
+  ,"block.moderntinkers.ender_congealed_slime": "Ender Congealed Slime"
+  ,"block.moderntinkers.blood_congealed_slime": "Blood Congealed Slime"
+  ,"block.moderntinkers.ichor_congealed_slime": "Ichor Congealed Slime"
+  ,"block.moderntinkers.slimewood_log": "Slimewood Log"
+  ,"block.moderntinkers.skyroot_log": "Skyroot Log"
+  ,"block.moderntinkers.bloodshroom_log": "Bloodshroom Log"
+  ,"block.moderntinkers.enderbark_log": "Enderbark Log"
+  ,"block.moderntinkers.slimewood_leaves": "Slimewood Leaves"
+  ,"block.moderntinkers.skyroot_leaves": "Skyroot Leaves"
+  ,"block.moderntinkers.bloodshroom_leaves": "Bloodshroom Leaves"
+  ,"block.moderntinkers.enderbark_leaves": "Enderbark Leaves"
+  ,"block.moderntinkers.slimewood_sapling": "Slimewood Sapling"
+  ,"block.moderntinkers.skyroot_sapling": "Skyroot Sapling"
+  ,"block.moderntinkers.bloodshroom_sapling": "Bloodshroom Sapling"
+  ,"block.moderntinkers.enderbark_sapling": "Enderbark Sapling"
+  ,"block.moderntinkers.cobalt_ore": "Cobalt Ore"
+  ,"block.moderntinkers.raw_cobalt_block": "Block of Raw Cobalt"
+  ,"item.moderntinkers.raw_cobalt": "Raw Cobalt"
+  ,"material.moderntinkers.feather": "Feather"
+  ,"item.moderntinkers.pattern": "Pattern"
+  ,"item.moderntinkers.ingot_cast": "Ingot Cast"
+  ,"item.moderntinkers.nugget_cast": "Nugget Cast"
+  ,"item.moderntinkers.ingot_sand_cast": "Ingot Sand Cast"
+  ,"item.moderntinkers.ingot_red_sand_cast": "Ingot Red Sand Cast"
+  ,"item.moderntinkers.nugget_sand_cast": "Nugget Sand Cast"
+  ,"item.moderntinkers.nugget_red_sand_cast": "Nugget Red Sand Cast"
+  ,"item.moderntinkers.repair_kit_cast": "Repair Kit Cast"
+  ,"item.moderntinkers.fake_ingot_cast": "Ingot Cast"
+  ,"item.moderntinkers.pick_head_cast": "Pick Head Cast"
+  ,"item.moderntinkers.hammer_head_cast": "Hammer Head Cast"
+  ,"item.moderntinkers.small_axe_head_cast": "Small Axe Head Cast"
+  ,"item.moderntinkers.broad_axe_head_cast": "Broad Axe Head Cast"
+  ,"item.moderntinkers.small_blade_cast": "Small Blade Cast"
+  ,"item.moderntinkers.broad_blade_cast": "Broad Blade Cast"
+  ,"item.moderntinkers.adze_head_cast": "Adze Head Cast"
+  ,"item.moderntinkers.large_plate_cast": "Large Plate Cast"
+  ,"item.moderntinkers.bow_limb_cast": "Bow Limb Cast"
+  ,"item.moderntinkers.bow_grip_cast": "Bow Grip Cast"
+  ,"item.moderntinkers.bowstring_cast": "Bowstring Cast"
+  ,"item.moderntinkers.arrow_head_cast": "Arrow Head Cast"
+  ,"item.moderntinkers.arrow_shaft_cast": "Arrow Shaft Cast"
+  ,"item.moderntinkers.fletching_cast": "Fletching Cast"
+  ,"item.moderntinkers.tool_binding_cast": "Tool Binding Cast"
+  ,"item.moderntinkers.tough_binding_cast": "Tough Binding Cast"
+  ,"item.moderntinkers.tool_handle_cast": "Tool Handle Cast"
+  ,"item.moderntinkers.tough_handle_cast": "Tough Handle Cast"
+  ,"item.moderntinkers.plating_helmet_cast": "Helmet Plating Cast"
+  ,"item.moderntinkers.plating_chestplate_cast": "Chest Plating Cast"
+  ,"item.moderntinkers.plating_leggings_cast": "Leg Plating Cast"
+  ,"item.moderntinkers.plating_boots_cast": "Boot Plating Cast"
+  ,"item.moderntinkers.maille_cast": "Maille Cast"
+  ,"item.moderntinkers.ribcage_cast": "Ribcage Cast"
+  ,"item.moderntinkers.shell_cast": "Shell Cast"
+  ,"item.moderntinkers.laces_cast": "Laces Cast"
+  ,"item.moderntinkers.skull_cast": "Skull Cast"
+  ,"item.moderntinkers.slime_cast": "Slime Coating Cast"
+  ,"item.moderntinkers.shield_core_cast": "Shield Core Cast"
+  ,"item.moderntinkers.molten_iron_bucket": "Bucket of Molten Iron"
+  ,"item.moderntinkers.molten_gold_bucket": "Bucket of Molten Gold"
+  ,"item.moderntinkers.molten_copper_bucket": "Bucket of Molten Copper"
+  ,"item.moderntinkers.molten_cobalt_bucket": "Bucket of Molten Cobalt"
+  ,"item.moderntinkers.molten_steel_bucket": "Bucket of Molten Steel"
+  ,"item.moderntinkers.molten_slimesteel_bucket": "Bucket of Molten Slimesteel"
+  ,"item.moderntinkers.molten_amethyst_bronze_bucket": "Bucket of Molten Amethyst Bronze"
+  ,"item.moderntinkers.molten_rose_gold_bucket": "Bucket of Molten Rose Gold"
+  ,"item.moderntinkers.molten_pig_iron_bucket": "Bucket of Molten Pig Iron"
+  ,"item.moderntinkers.molten_cinderslime_bucket": "Bucket of Molten Cinderslime"
+  ,"item.moderntinkers.molten_queens_slime_bucket": "Bucket of Molten Queen's Slime"
+  ,"item.moderntinkers.molten_manyullyn_bucket": "Bucket of Molten Manyullyn"
+  ,"item.moderntinkers.molten_hepatizon_bucket": "Bucket of Molten Hepatizon"
+  ,"item.moderntinkers.molten_knightmetal_bucket": "Bucket of Molten Knightmetal"
+  ,"item.moderntinkers.molten_knightslime_bucket": "Bucket of Molten Knightslime"
+  ,"item.moderntinkers.molten_soulsteel_bucket": "Bucket of Molten Soulsteel"
+  ,"item.moderntinkers.molten_netherite_bucket": "Bucket of Molten Netherite"
+  ,"item.moderntinkers.molten_debris_bucket": "Bucket of Molten Debris"
+  ,"item.moderntinkers.molten_amethyst_bucket": "Bucket of Molten Amethyst"
+  ,"item.moderntinkers.molten_quartz_bucket": "Bucket of Molten Quartz"
+  ,"item.moderntinkers.molten_sky_slime_bucket": "Bucket of Molten Sky Slime"
+  ,"item.moderntinkers.molten_blood_bucket": "Bucket of Molten Blood"
+  ,"item.moderntinkers.molten_magma_bucket": "Bucket of Molten Magma"
+  ,"item.moderntinkers.molten_meat_soup_bucket": "Bucket of Molten Meat Soup"
+  ,"item.moderntinkers.molten_honey_bucket": "Bucket of Molten Honey"
+  ,"item.moderntinkers.molten_ender_slime_bucket": "Bucket of Molten Ender Slime"
+  ,"item.moderntinkers.molten_obsidian_bucket": "Bucket of Molten Obsidian"
+  ,"item.moderntinkers.molten_ichor_bucket": "Bucket of Molten Ichor"
+  ,"item.moderntinkers.seared_stone_bucket": "Bucket of Seared Stone"
+  ,"item.moderntinkers.scorched_stone_bucket": "Bucket of Scorched Stone"
+  ,"item.moderntinkers.steel_shard": "Steel Shard"
+  ,"item.moderntinkers.cobalt_shard": "Cobalt Shard"
+  ,"item.moderntinkers.knightmetal_shard": "Knightmetal Shard"
+  ,"block.moderntinkers.steel_cluster": "Steel Crystal Cluster"
+  ,"block.moderntinkers.cobalt_cluster": "Cobalt Crystal Cluster"
+  ,"block.moderntinkers.knightmetal_cluster": "Knightmetal Crystal Cluster"
+  ,"block.moderntinkers.greenheart_log": "Greenheart Log"
+  ,"item.moderntinkers.block": "Block"
+  ,"item.moderntinkers.ingot": "Ingot"
+  ,"item.moderntinkers.crystal": "Crystal"
+  ,"entity.moderntinkers.sky_slime": "Sky Slime"
+  ,"entity.moderntinkers.ender_slime": "Ender Slime"
+  ,"entity.moderntinkers.terracube": "Terracube"
+  }

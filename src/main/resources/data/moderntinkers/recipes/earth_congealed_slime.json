@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": ["SSS", "SSS", "SSS"],
+  "key": {"S": {"item": "minecraft:slime_ball"}},
+  "result": {"id": "moderntinkers:earth_congealed_slime"}
+}

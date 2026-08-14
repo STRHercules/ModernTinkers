@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["GCG", " L ", " L "],
+  "key": {
+    "G": {"item": "moderntinkers:earth_slime_crystal"},
+    "L": {"item": "moderntinkers:slimewood_log"},
+    "C": {"item": "moderntinkers:cobalt_ingot"}
+  },
+  "result": {"id": "moderntinkers:earth_staff"}
+}

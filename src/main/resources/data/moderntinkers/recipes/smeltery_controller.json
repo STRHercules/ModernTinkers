@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["BBB", "BMB", "BBB"],
+  "key": {
+    "B": { "item": "moderntinkers:seared_bricks" },
+    "M": { "item": "moderntinkers:melter" }
+  },
+  "result": { "id": "moderntinkers:smeltery_controller" }
+}

@@ -1,0 +1,10 @@
+{
+  "harvest_tier": "stone",
+  "head_durability": 210,
+  "mining_speed": 5.0,
+  "head_attack_damage": 1.5,
+  "handle_durability": 0.05,
+  "ingot": "minecraft:copper_ingot",
+  "nugget": "moderntinkers:copper_nugget",
+  "color": "#B86C4B"
+}

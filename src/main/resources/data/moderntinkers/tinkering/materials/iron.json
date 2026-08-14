@@ -1,0 +1,10 @@
+{
+  "harvest_tier": "iron",
+  "head_durability": 250,
+  "mining_speed": 6.0,
+  "head_attack_damage": 2.0,
+  "handle_durability": 0.10,
+  "ingot": "minecraft:iron_ingot",
+  "nugget": "minecraft:iron_nugget",
+  "color": "#D8D8D8"
+}

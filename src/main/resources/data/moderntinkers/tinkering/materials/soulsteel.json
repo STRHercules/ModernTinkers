@@ -1,0 +1,11 @@
+{
+  "harvest_tier": "diamond",
+  "head_durability": 700,
+  "mining_speed": 6.5,
+  "head_attack_damage": 2.75,
+  "handle_durability": 0.10,
+  "traits": ["necrotic"],
+  "ingot": "moderntinkers:soulsteel_ingot",
+  "nugget": "moderntinkers:soulsteel_nugget",
+  "color": "#5A3C3C"
+}

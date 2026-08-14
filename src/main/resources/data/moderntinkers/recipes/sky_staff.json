@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["GCG", " L ", " L "],
+  "key": {
+    "G": {"item": "moderntinkers:sky_slime_crystal"},
+    "C": {"item": "moderntinkers:rose_gold_ingot"},
+    "L": {"item": "moderntinkers:skyroot_log"}
+  },
+  "result": {"id": "moderntinkers:sky_staff"}
+}

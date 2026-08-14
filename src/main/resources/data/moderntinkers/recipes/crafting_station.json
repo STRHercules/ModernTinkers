@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "p": {
+      "item": "moderntinkers:pattern"
+    },
+    "w": {
+      "item": "minecraft:crafting_table"
+    }
+  },
+  "pattern": [
+    "p",
+    "w"
+  ],
+  "result": {
+    "id": "moderntinkers:crafting_station"
+  }
+}

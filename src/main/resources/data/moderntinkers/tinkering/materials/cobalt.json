@@ -1,0 +1,13 @@
+{
+  "harvest_tier": "diamond",
+  "head_durability": 800,
+  "mining_speed": 6.5,
+  "head_attack_damage": 2.25,
+  "handle_durability": 0.05,
+  "handle_mining_speed": 0.05,
+  "handle_attack_speed": 0.05,
+  "traits": ["lightspeed"],
+  "ingot": "moderntinkers:cobalt_ingot",
+  "nugget": "moderntinkers:cobalt_nugget",
+  "color": "#3569D6"
+}

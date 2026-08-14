@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["SS", "SS"],
+  "key": { "S": { "item": "minecraft:stone" } },
+  "result": { "id": "moderntinkers:seared_bricks", "count": 4 }
+}

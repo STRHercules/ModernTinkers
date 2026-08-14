@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["GCG", " L ", " L "],
+  "key": {
+    "G": {"item": "moderntinkers:ender_slime_crystal"},
+    "C": {"item": "minecraft:netherite_ingot"},
+    "L": {"item": "moderntinkers:enderbark_log"}
+  },
+  "result": {"id": "moderntinkers:ender_staff"}
+}

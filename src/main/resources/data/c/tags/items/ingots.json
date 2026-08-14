@@ -1,0 +1,18 @@
+{
+  "replace": false,
+  "values": [
+    "#c:ingots/cobalt",
+    "#c:ingots/steel",
+    "#c:ingots/slimesteel",
+    "#c:ingots/amethyst_bronze",
+    "#c:ingots/rose_gold",
+    "#c:ingots/pig_iron",
+    "#c:ingots/cinderslime",
+    "#c:ingots/queens_slime",
+    "#c:ingots/manyullyn",
+    "#c:ingots/hepatizon",
+    "#c:ingots/knightmetal",
+    "#c:ingots/knightslime",
+    "#c:ingots/soulsteel"
+  ]
+}

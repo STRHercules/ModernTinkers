@@ -1,0 +1,6 @@
+{
+  "parent": "moderntinkers:item/base/geode/small_bud",
+  "textures": {
+    "layer0": "moderntinkers:block/geode/sky/small_bud"
+  }
+}

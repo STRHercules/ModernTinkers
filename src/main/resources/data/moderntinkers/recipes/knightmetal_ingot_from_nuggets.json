@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "n": {
+      "tag": "c:nuggets/knightmetal"
+    }
+  },
+  "pattern": [
+    "nnn",
+    "nnn",
+    "nnn"
+  ],
+  "result": {
+    "id": "moderntinkers:knightmetal_ingot"
+  }
+}

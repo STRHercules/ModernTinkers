@@ -1,0 +1,11 @@
+{
+  "harvest_tier": "stone",
+  "head_durability": 175,
+  "mining_speed": 9.0,
+  "head_attack_damage": 1.0,
+  "handle_durability": -0.30,
+  "handle_mining_speed": 0.10,
+  "ingot": "minecraft:gold_ingot",
+  "nugget": "minecraft:gold_nugget",
+  "color": "#FFD83D"
+}

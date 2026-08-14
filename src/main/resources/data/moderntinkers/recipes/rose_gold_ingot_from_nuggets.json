@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "n": {
+      "tag": "c:nuggets/rose_gold"
+    }
+  },
+  "pattern": [
+    "nnn",
+    "nnn",
+    "nnn"
+  ],
+  "result": {
+    "id": "moderntinkers:rose_gold_ingot"
+  }
+}

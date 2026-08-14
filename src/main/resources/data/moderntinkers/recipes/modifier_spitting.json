@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["LLL", "FCF", "LLL"],
+  "key": {
+    "L": {"item": "moderntinkers:bow_limb"},
+    "F": {"item": "moderntinkers:seared_casting_tank"},
+    "C": {"item": "moderntinkers:modifier_crystal"}
+  },
+  "result": {"id": "moderntinkers:spitting"}
+}

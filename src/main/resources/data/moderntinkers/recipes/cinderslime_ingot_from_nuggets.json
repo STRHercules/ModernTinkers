@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "n": {
+      "tag": "c:nuggets/cinderslime"
+    }
+  },
+  "pattern": [
+    "nnn",
+    "nnn",
+    "nnn"
+  ],
+  "result": {
+    "id": "moderntinkers:cinderslime_ingot"
+  }
+}

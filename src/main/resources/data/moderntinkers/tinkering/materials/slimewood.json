@@ -1,0 +1,11 @@
+{
+  "harvest_tier": "stone",
+  "head_durability": 300,
+  "mining_speed": 3.5,
+  "head_attack_damage": 0.75,
+  "handle_durability": 0.10,
+  "item": "minecraft:slime_ball",
+  "item_units": 9,
+  "color": "#8BC98B",
+  "traits": ["slimey"]
+}

@@ -1,0 +1,11 @@
+{
+  "harvest_tier": "netherite",
+  "head_durability": 800,
+  "mining_speed": 8.0,
+  "head_attack_damage": 3.5,
+  "handle_durability": 0.15,
+  "ingot": "minecraft:netherite_ingot",
+  "nugget": "moderntinkers:netherite_nugget",
+  "additional_inputs": ["minecraft:netherite_scrap", "moderntinkers:debris_nugget"],
+  "color": "#443B45"
+}

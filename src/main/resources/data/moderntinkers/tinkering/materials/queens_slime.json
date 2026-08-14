@@ -1,0 +1,11 @@
+{
+  "harvest_tier": "netherite",
+  "head_durability": 1150,
+  "mining_speed": 7.0,
+  "head_attack_damage": 3.0,
+  "handle_durability": 0.15,
+  "traits": ["slime"],
+  "ingot": "moderntinkers:queens_slime_ingot",
+  "nugget": "moderntinkers:queens_slime_nugget",
+  "color": "#8BD35C"
+}

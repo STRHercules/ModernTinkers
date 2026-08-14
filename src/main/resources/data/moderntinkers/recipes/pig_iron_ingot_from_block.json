@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "moderntinkers:pig_iron_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "moderntinkers:pig_iron_ingot"
+  }
+}

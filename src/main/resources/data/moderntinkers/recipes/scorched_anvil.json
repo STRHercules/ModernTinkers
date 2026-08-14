@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["III", " S ", "SSS"],
+  "key": {
+    "I": { "item": "moderntinkers:knightmetal_ingot" },
+    "S": { "item": "moderntinkers:scorched_stone_bucket" }
+  },
+  "result": { "id": "moderntinkers:scorched_anvil" }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": ["SSS", "SRS", "SSS"],
+  "key": {
+    "S": {"item": "minecraft:slime_ball"},
+    "R": {"item": "minecraft:rotten_flesh"}
+  },
+  "result": {"id": "moderntinkers:blood_congealed_slime"}
+}

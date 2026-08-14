@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "moderntinkers:pattern",
+    "moderntinkers:crafting_station",
+    "moderntinkers:tinker_station",
+    "moderntinkers:part_builder",
+    "moderntinkers:modifier_worktable",
+    "moderntinkers:tinkers_anvil",
+    "moderntinkers:scorched_anvil"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["GCG", " L ", " L "],
+  "key": {
+    "G": {"item": "moderntinkers:ichor_slime_crystal"},
+    "C": {"item": "moderntinkers:queens_slime_ingot"},
+    "L": {"item": "moderntinkers:bloodshroom_log"}
+  },
+  "result": {"id": "moderntinkers:ichor_staff"}
+}

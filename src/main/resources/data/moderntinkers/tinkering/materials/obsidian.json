@@ -1,0 +1,11 @@
+{
+  "harvest_tier": "diamond",
+  "head_durability": 1200,
+  "mining_speed": 5.5,
+  "head_attack_damage": 3.0,
+  "handle_durability": 0.10,
+  "item": "minecraft:obsidian",
+  "item_units": 9,
+  "color": "#241B37",
+  "traits": ["durable"]
+}

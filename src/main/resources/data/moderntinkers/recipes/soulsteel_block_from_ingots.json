@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "m": {
+      "tag": "c:ingots/soulsteel"
+    }
+  },
+  "pattern": [
+    "mmm",
+    "mmm",
+    "mmm"
+  ],
+  "result": {
+    "id": "moderntinkers:soulsteel_block"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "moderntinkers:block/smeltery/heater" }
+  }
+}

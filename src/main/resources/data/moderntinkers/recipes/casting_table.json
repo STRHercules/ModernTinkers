@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["GGG", "S S", "SSS"],
+  "key": {
+    "G": {"item": "minecraft:gold_ingot"},
+    "S": {"item": "minecraft:stone"}
+  },
+  "result": {"id": "moderntinkers:casting_table"}
+}

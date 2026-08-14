@@ -1,0 +1,11 @@
+[
+  {"result":"molten_manyullyn","amount":360,"inputs":[{"fluid":"molten_cobalt","amount":270},{"fluid":"molten_netherite","amount":90}]},
+  {"result":"molten_rose_gold","amount":180,"inputs":[{"fluid":"molten_copper","amount":90},{"fluid":"molten_gold","amount":90}]},
+  {"result":"molten_amethyst_bronze","amount":90,"inputs":[{"fluid":"molten_copper","amount":90},{"fluid":"molten_amethyst","amount":100}]},
+  {"result":"molten_hepatizon","amount":180,"inputs":[{"fluid":"molten_copper","amount":180},{"fluid":"molten_cobalt","amount":90},{"fluid":"molten_quartz","amount":100}]},
+  {"result":"molten_slimesteel","amount":180,"inputs":[{"fluid":"molten_iron","amount":90},{"fluid":"molten_sky_slime","amount":250},{"fluid":"seared_stone","amount":250}]},
+  {"result":"molten_queens_slime","amount":180,"inputs":[{"fluid":"molten_cobalt","amount":90},{"fluid":"molten_gold","amount":90},{"fluid":"molten_magma","amount":250}]},
+  {"result":"molten_pig_iron","amount":180,"inputs":[{"fluid":"molten_iron","amount":90},{"fluid":"molten_meat_soup","amount":500},{"fluid":"molten_honey","amount":250}]},
+  {"result":"molten_knightslime","amount":180,"inputs":[{"fluid":"molten_cobalt","amount":90},{"fluid":"molten_ender_slime","amount":250},{"fluid":"molten_obsidian","amount":250}]},
+  {"result":"molten_cinderslime","amount":180,"inputs":[{"fluid":"molten_gold","amount":90},{"fluid":"molten_ichor","amount":250},{"fluid":"scorched_stone","amount":250}]}
+]

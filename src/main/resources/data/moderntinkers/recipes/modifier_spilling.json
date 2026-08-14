@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["CDC", "TCT", "CDC"],
+  "key": {
+    "C": {"item": "moderntinkers:copper_ingot"},
+    "D": {"item": "moderntinkers:seared_channel"},
+    "T": {"item": "moderntinkers:seared_tank"}
+  },
+  "result": {"id": "moderntinkers:spilling"}
+}

@@ -1,0 +1,10 @@
+{
+  "harvest_tier": "iron",
+  "head_durability": 500,
+  "mining_speed": 4.5,
+  "head_attack_damage": 2.0,
+  "item": "minecraft:prismarine_shard",
+  "item_units": 9,
+  "color": "#72A59A",
+  "traits": ["aquatic"]
+}

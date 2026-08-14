@@ -1,0 +1,11 @@
+{
+  "harvest_tier": "diamond",
+  "head_durability": 580,
+  "mining_speed": 6.0,
+  "head_attack_damage": 2.5,
+  "handle_durability": 0.10,
+  "handle_attack_damage": -0.15,
+  "ingot": "moderntinkers:knightmetal_ingot",
+  "nugget": "moderntinkers:knightmetal_nugget",
+  "color": "#6E8754"
+}

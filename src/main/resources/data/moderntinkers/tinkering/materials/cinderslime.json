@@ -1,0 +1,11 @@
+{
+  "harvest_tier": "diamond",
+  "head_durability": 720,
+  "mining_speed": 7.0,
+  "head_attack_damage": 1.5,
+  "handle_attack_damage": 0.10,
+  "traits": ["flamewake"],
+  "ingot": "moderntinkers:cinderslime_ingot",
+  "nugget": "moderntinkers:cinderslime_nugget",
+  "color": "#F28D43"
+}

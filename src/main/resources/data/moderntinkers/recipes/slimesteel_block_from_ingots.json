@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "m": {
+      "tag": "c:ingots/slimesteel"
+    }
+  },
+  "pattern": [
+    "mmm",
+    "mmm",
+    "mmm"
+  ],
+  "result": {
+    "id": "moderntinkers:slimesteel_block"
+  }
+}

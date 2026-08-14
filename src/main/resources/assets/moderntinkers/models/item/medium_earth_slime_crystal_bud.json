@@ -1,0 +1,6 @@
+{
+  "parent": "moderntinkers:item/base/geode/medium_bud",
+  "textures": {
+    "layer0": "moderntinkers:block/geode/earth/medium_bud"
+  }
+}

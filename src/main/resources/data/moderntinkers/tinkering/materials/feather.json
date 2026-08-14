@@ -1,0 +1,9 @@
+{
+  "harvest_tier": "wood",
+  "head_durability": 80,
+  "mining_speed": 2.0,
+  "head_attack_damage": 0.0,
+  "item": "minecraft:feather",
+  "item_units": 9,
+  "color": "#EFEFEF"
+}

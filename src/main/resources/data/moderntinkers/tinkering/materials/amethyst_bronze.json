@@ -1,0 +1,12 @@
+{
+  "harvest_tier": "diamond",
+  "head_durability": 720,
+  "mining_speed": 7.0,
+  "head_attack_damage": 1.5,
+  "handle_attack_damage": 0.10,
+  "handle_attack_speed": 0.05,
+  "traits": ["amethyst"],
+  "ingot": "moderntinkers:amethyst_bronze_ingot",
+  "nugget": "moderntinkers:amethyst_bronze_nugget",
+  "color": "#B38BDB"
+}

@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": ["CC", "CC"],
+  "key": {"C": {"item": "moderntinkers:sky_slime_crystal"}},
+  "result": {"id": "moderntinkers:sky_slime_crystal_block"}
+}

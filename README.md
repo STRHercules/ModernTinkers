@@ -4,7 +4,7 @@ ModernTinkers is a single NeoForge bundle for Minecraft 1.21.1 that ports and co
 
 ## Status
 
-The repository now has a minimal, buildable NeoForge 1.21.1 bootstrap at version `1.2.3`: Java 21, Gradle Wrapper 9.2.1, ModDevGradle 2.0.143, and NeoForge 21.1.240. Feature porting has not started yet; the legacy projects remain research inputs.
+The repository now has a buildable NeoForge 1.21.1 port at version `1.2.10`. The current sweep registers static materials, tool parts, modifiers, tables, smeltery content, fluids, tools, armor, shields, arrows, and world content. It also includes server-authoritative Part Builder, Tinker Station, Modifier Worktable, casting, melter, alloyer, and smeltery controller paths, plus indexed multi-part tool assembly, initialized zero-part tools, material-aware melting, special-tool interactions, and cobalt worldgen. Client rendering, dedicated-server startup, fresh-world gameplay, multiplayer synchronization, and optional integrations remain runtime validation work.
 
 ## Scope
 
@@ -45,9 +45,9 @@ gradlew.bat test
 gradlew.bat runClient
 ```
 
-The initial scaffold builds `ModernTinkers-1.21.1-1.2.3-NeoForge.jar` under `build/libs/`. The mod ID is `moderntinkers`, the Java package root is `com.moderntinkers`, and the metadata license is temporarily `UNLICENSED` until the project's licensing decision is made.
+The current build produces `ModernTinkers-1.21.1-1.2.10-NeoForge.jar` under `build/libs/`. The mod ID is `moderntinkers`, the Java package root is `com.moderntinkers`, and the metadata license is temporarily `UNLICENSED` until the project's licensing decision is made.
 
-Every repository change must increment the build number in `gradle.properties` (for example, `1.2.3` to `1.2.4`) and produce the matching `ModernTinkers-1.21.1-<version>-NeoForge.jar` artifact.
+Every repository change must increment the build number in `gradle.properties` (for example, `1.2.6` to `1.2.7`) and produce the matching `ModernTinkers-1.21.1-<version>-NeoForge.jar` artifact.
 
 A successful build is only one part of validation. A complete port also needs client and dedicated-server loading checks, fresh-world gameplay checks, content and recipe verification, optional-integration checks, and multiplayer checks where state is synchronized.
 

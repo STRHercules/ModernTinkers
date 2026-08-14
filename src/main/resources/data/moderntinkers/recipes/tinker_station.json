@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "p": {
+      "item": "moderntinkers:pattern"
+    },
+    "w": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "pattern": [
+    "ppp",
+    "w w",
+    "w w"
+  ],
+  "result": {
+    "id": "moderntinkers:tinker_station"
+  }
+}

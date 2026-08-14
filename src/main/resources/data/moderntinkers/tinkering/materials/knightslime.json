@@ -1,0 +1,13 @@
+{
+  "harvest_tier": "diamond",
+  "head_durability": 775,
+  "mining_speed": 6.0,
+  "head_attack_damage": 2.75,
+  "handle_durability": 0.05,
+  "handle_mining_speed": 0.05,
+  "handle_attack_speed": 0.05,
+  "traits": ["crumbling", "overshield"],
+  "ingot": "moderntinkers:knightslime_ingot",
+  "nugget": "moderntinkers:knightslime_nugget",
+  "color": "#5A4F70"
+}

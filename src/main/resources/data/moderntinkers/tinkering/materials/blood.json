@@ -1,0 +1,11 @@
+{
+  "harvest_tier": "iron",
+  "head_durability": 150,
+  "mining_speed": 4.0,
+  "head_attack_damage": 1.0,
+  "handle_durability": 0.10,
+  "color": "#A12D38",
+  "traits": ["slimey"],
+  "item": "moderntinkers:blood_slime",
+  "item_units": 9
+}

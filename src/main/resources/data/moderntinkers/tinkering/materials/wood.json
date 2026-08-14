@@ -1,0 +1,10 @@
+{
+  "harvest_tier": "wood",
+  "head_durability": 200,
+  "mining_speed": 2.0,
+  "head_attack_damage": 0.5,
+  "handle_durability": 0.05,
+  "item": "minecraft:oak_planks",
+  "item_units": 9,
+  "color": "#9A6A3A"
+}

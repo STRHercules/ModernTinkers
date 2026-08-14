@@ -1,0 +1,9 @@
+{
+  "harvest_tier": "stone",
+  "head_durability": 350,
+  "mining_speed": 4.5,
+  "head_attack_damage": 1.0,
+  "item": "moderntinkers:blazewood",
+  "traits": ["flamewake"],
+  "color": "#CB603B"
+}

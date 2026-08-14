@@ -1,0 +1,11 @@
+{
+  "harvest_tier": "diamond",
+  "head_durability": 850,
+  "mining_speed": 6.0,
+  "head_attack_damage": 2.0,
+  "handle_durability": 0.10,
+  "handle_attack_speed": 0.05,
+  "ingot": "moderntinkers:slimesteel_ingot",
+  "nugget": "moderntinkers:slimesteel_nugget",
+  "color": "#6EB8A5"
+}

@@ -1,0 +1,9 @@
+{
+  "harvest_tier": "wood",
+  "head_durability": 100,
+  "mining_speed": 2.5,
+  "head_attack_damage": 0.5,
+  "item": "minecraft:bone",
+  "item_units": 9,
+  "color": "#E8E1C8"
+}

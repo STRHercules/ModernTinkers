@@ -1,0 +1,12 @@
+{
+  "harvest_tier": "iron",
+  "head_durability": 540,
+  "mining_speed": 5.0,
+  "head_attack_damage": 2.0,
+  "handle_durability": 0.10,
+  "handle_attack_speed": 0.05,
+  "traits": ["bloodbound"],
+  "ingot": "moderntinkers:pig_iron_ingot",
+  "nugget": "moderntinkers:pig_iron_nugget",
+  "color": "#D18B84"
+}

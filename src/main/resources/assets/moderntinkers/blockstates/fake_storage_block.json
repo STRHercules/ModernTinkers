@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "moderntinkers:block/storage/fake_storage_block"
+    }
+  }
+}

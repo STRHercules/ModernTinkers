@@ -1,0 +1,22 @@
+{
+  "replace": false,
+  "values": [
+    "moderntinkers:molten_iron",
+    "moderntinkers:molten_gold",
+    "moderntinkers:molten_copper",
+    "moderntinkers:molten_cobalt",
+    "moderntinkers:molten_steel",
+    "moderntinkers:molten_slimesteel",
+    "moderntinkers:molten_amethyst_bronze",
+    "moderntinkers:molten_rose_gold",
+    "moderntinkers:molten_pig_iron",
+    "moderntinkers:molten_cinderslime",
+    "moderntinkers:molten_queens_slime",
+    "moderntinkers:molten_manyullyn",
+    "moderntinkers:molten_hepatizon",
+    "moderntinkers:molten_knightmetal",
+    "moderntinkers:molten_knightslime",
+    "moderntinkers:molten_soulsteel",
+    "moderntinkers:molten_netherite"
+  ]
+}

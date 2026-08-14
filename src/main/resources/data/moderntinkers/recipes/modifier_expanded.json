@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["PAP", "ICI", "PAP"],
+  "key": {
+    "P": {"item": "minecraft:piston"},
+    "A": {"item": "moderntinkers:amethyst_bronze_ingot"},
+    "I": {"item": "moderntinkers:ichor_slime"},
+    "C": {"item": "moderntinkers:modifier_crystal"}
+  },
+  "result": {"id": "moderntinkers:expanded"}
+}

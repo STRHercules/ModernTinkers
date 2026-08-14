@@ -1,0 +1,9 @@
+{
+  "harvest_tier": "stone",
+  "head_durability": 150,
+  "mining_speed": 5.0,
+  "head_attack_damage": 1.5,
+  "item": "minecraft:flint",
+  "item_units": 9,
+  "color": "#6E6E6E"
+}

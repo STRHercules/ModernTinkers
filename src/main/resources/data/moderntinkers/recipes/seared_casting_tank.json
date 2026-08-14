@@ -1,0 +1,1 @@
+{"type":"minecraft:crafting_shaped","pattern":["S S","SGS","S S"],"key":{"S":{"item":"moderntinkers:seared_bricks"},"G":{"item":"minecraft:glass"}},"result":{"id":"moderntinkers:seared_casting_tank"}}

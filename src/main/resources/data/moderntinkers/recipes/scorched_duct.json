@@ -1,0 +1,1 @@
+{"type":"minecraft:crafting_shaped","pattern":["S S"," I ","S S"],"key":{"S":{"item":"moderntinkers:scorched_bricks"},"I":{"item":"minecraft:iron_ingot"}},"result":{"id":"moderntinkers:scorched_duct","count":2}}

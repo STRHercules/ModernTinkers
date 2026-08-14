@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["III", " S ", "SSS"],
+  "key": {
+    "I": { "tag": "c:ingots/iron" },
+    "S": { "item": "minecraft:iron_block" }
+  },
+  "result": { "id": "moderntinkers:tinkers_anvil" }
+}

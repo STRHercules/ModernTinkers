@@ -1,0 +1,9 @@
+{
+  "harvest_tier": "stone",
+  "head_durability": 100,
+  "mining_speed": 4.0,
+  "head_attack_damage": 1.5,
+  "item": "minecraft:cobblestone",
+  "item_units": 9,
+  "color": "#898989"
+}
