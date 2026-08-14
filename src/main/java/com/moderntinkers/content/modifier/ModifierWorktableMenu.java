@@ -1,6 +1,7 @@
 package com.moderntinkers.content.modifier;
 
 import com.moderntinkers.content.StaticContent;
+import com.moderntinkers.content.TinkerMenuTransfer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.Container;
@@ -56,7 +57,7 @@ public final class ModifierWorktableMenu extends AbstractContainerMenu {
             @Override
             public void onTake(Player player, ItemStack stack) {
                 if (blockEntity != null) {
-                    blockEntity.craft(player);
+                    blockEntity.craft(player, stack.getCount());
                 }
                 super.onTake(player, stack);
             }
@@ -127,11 +128,14 @@ public final class ModifierWorktableMenu extends AbstractContainerMenu {
         ItemStack source = clicked.getItem();
         ItemStack moved = source.copy();
         if (index == OUTPUT_SLOT) {
-            int originalCount = source.getCount();
+            if (!TinkerMenuTransfer.canMoveEntireStack(
+                    slots, source, PLAYER_INVENTORY_START, slots.size())) {
+                return ItemStack.EMPTY;
+            }
             if (!moveItemStackTo(source, PLAYER_INVENTORY_START, slots.size(), true)) {
                 return ItemStack.EMPTY;
             }
-            int movedCount = originalCount - source.getCount();
+            int movedCount = moved.getCount() - source.getCount();
             if (movedCount <= 0) {
                 return ItemStack.EMPTY;
             }
@@ -141,7 +145,7 @@ public final class ModifierWorktableMenu extends AbstractContainerMenu {
                 clicked.setChanged();
             }
             if (blockEntity != null) {
-                blockEntity.craft(player);
+                blockEntity.craft(player, movedCount);
             }
             return moved.copyWithCount(movedCount);
         } else if (index == TOOL_SLOT || index == MODIFIER_SLOT) {

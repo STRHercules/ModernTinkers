@@ -51,8 +51,11 @@ public final class TinkersAnvilBlockEntity extends BlockEntity implements MenuPr
             return false;
         }
         if (MaterialPartItem.isPart(stack)) {
+            String material = MaterialPartItem.getMaterial(stack);
             return "repair_kit".equals(MaterialPartItem.getPartId(stack))
-                    && !MaterialPartItem.getMaterial(stack).isEmpty();
+                    && !material.isEmpty()
+                    && MaterialManager.get(material) != null
+                    && MaterialPartItem.partUnits("repair_kit") > 0;
         }
         return MaterialManager.findInput(stack).isPresent();
     }
@@ -73,7 +76,7 @@ public final class TinkersAnvilBlockEntity extends BlockEntity implements MenuPr
         return !calculateResult().isEmpty();
     }
 
-    public void craft(Player player) {
+    public void craft(Player player, int resultCount) {
         Level level = getLevel();
         if (level == null || level.isClientSide) {
             return;
@@ -83,13 +86,13 @@ public final class TinkersAnvilBlockEntity extends BlockEntity implements MenuPr
             return;
         }
         ItemStack output = calculateResult();
-        if (output.isEmpty()) {
+        if (output.isEmpty() || resultCount <= 0 || resultCount != output.getCount()) {
             refreshResult();
             return;
         }
         inputs.removeItem(TOOL_SLOT, 1);
         inputs.removeItem(MATERIAL_SLOT, 1);
-        output.onCraftedBy(level, player, 1);
+        output.onCraftedBy(level, player, resultCount);
         refreshResult();
         setChanged();
     }

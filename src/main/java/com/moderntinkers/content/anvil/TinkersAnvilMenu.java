@@ -1,5 +1,6 @@
 package com.moderntinkers.content.anvil;
 
+import com.moderntinkers.content.TinkerMenuTransfer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.Container;
@@ -53,7 +54,7 @@ public final class TinkersAnvilMenu extends AbstractContainerMenu {
             @Override
             public void onTake(Player player, ItemStack stack) {
                 if (blockEntity != null) {
-                    blockEntity.craft(player);
+                    blockEntity.craft(player, stack.getCount());
                 }
                 super.onTake(player, stack);
             }
@@ -115,8 +116,13 @@ public final class TinkersAnvilMenu extends AbstractContainerMenu {
         ItemStack source = clicked.getItem();
         ItemStack moved = source.copy();
         if (index == OUTPUT_SLOT) {
-            if (blockEntity == null
+            if (blockEntity == null || !TinkerMenuTransfer.canMoveEntireStack(
+                    slots, source, PLAYER_INVENTORY_START, slots.size())
                     || !moveItemStackTo(source, PLAYER_INVENTORY_START, slots.size(), true)) {
+                return ItemStack.EMPTY;
+            }
+            int movedCount = moved.getCount() - source.getCount();
+            if (movedCount <= 0) {
                 return ItemStack.EMPTY;
             }
             if (source.isEmpty()) {
@@ -124,8 +130,8 @@ public final class TinkersAnvilMenu extends AbstractContainerMenu {
             } else {
                 clicked.setChanged();
             }
-            blockEntity.craft(player);
-            return moved;
+            blockEntity.craft(player, movedCount);
+            return moved.copyWithCount(movedCount);
         }
         if (index == TOOL_SLOT || index == MATERIAL_SLOT) {
             if (!moveItemStackTo(source, PLAYER_INVENTORY_START, slots.size(), true)) {

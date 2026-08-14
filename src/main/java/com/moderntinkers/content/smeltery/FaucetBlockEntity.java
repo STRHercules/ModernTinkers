@@ -9,6 +9,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -240,7 +241,8 @@ public final class FaucetBlockEntity extends BlockEntity {
 
     private static FluidStack sanitize(FluidStack stack, int maxAmount) {
         if (stack == null || stack.isEmpty()
-                || MaterialFluids.findByFluid(stack.getFluid()) == null) {
+                || (MaterialFluids.findByFluid(stack.getFluid()) == null
+                && stack.getFluid() != Fluids.LAVA)) {
             return FluidStack.EMPTY;
         }
         int amount = Math.min(maxAmount, Math.max(0, stack.getAmount()));

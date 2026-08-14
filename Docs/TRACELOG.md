@@ -142,3 +142,22 @@
 - Pending validation: dedicated-server/client loading, fresh-world table and
   smeltery transactions, visual tool/armor rendering, multiplayer state, full
   modifier runtime behavior, and optional integrations.
+
+## 2026-08-13 — Transaction and persistence hardening
+
+- Updated `TinkersAnvilBlockEntity`, `TinkersAnvilMenu`,
+  `ModifierWorktableBlockEntity`, `ModifierWorktableMenu`,
+  `PartBuilderBlockEntity`, and `TinkerStationBlockEntity` to validate known
+  materials/parts, assembled tool payloads, exact result counts, and complete
+  shift-click movement before consuming inputs.
+- Updated `FluidContents` and `FluidRemainderItem` to retain and expose
+  sub-bucket fluid amounts instead of discarding them; faucet persistence now
+  accepts vanilla lava, matching the seared/scorched tank contract.
+- Validation passed: `compileJava`, `clean build --console=plain
+  --no-daemon`, `test --console=plain --no-daemon` (`NO-SOURCE`), Python JSON
+  parsing for 1,106 authored resources, `git diff --check`, exactly one
+  `build/libs/ModernTinkers-1.21.1-1.2.10-NeoForge.jar`, and no changes under
+  `References/`.
+- Runtime gaps remain: client rendering, dedicated-server startup,
+  fresh-world gameplay, multiplayer synchronization, and optional integration
+  smoke tests were not run in this pass.

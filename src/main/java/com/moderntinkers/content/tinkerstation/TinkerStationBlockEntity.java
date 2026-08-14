@@ -1,6 +1,7 @@
 package com.moderntinkers.content.tinkerstation;
 
 import com.moderntinkers.content.StaticContent;
+import com.moderntinkers.content.material.MaterialManager;
 import com.moderntinkers.content.tools.MaterialPartItem;
 import com.moderntinkers.content.tools.TinkersArmorItem;
 import com.moderntinkers.content.tools.TinkersArrowItem;
@@ -49,7 +50,11 @@ public final class TinkerStationBlockEntity extends BlockEntity implements MenuP
     }
 
     public static boolean isPart(ItemStack stack) {
-        return MaterialPartItem.isPart(stack) && !MaterialPartItem.getMaterial(stack).isEmpty();
+        String material = MaterialPartItem.getMaterial(stack);
+        return MaterialPartItem.isPart(stack)
+                && !material.isEmpty()
+                && MaterialManager.get(material) != null
+                && MaterialPartItem.partUnits(MaterialPartItem.getPartId(stack)) > 0;
     }
 
     public Container getInputInventory() {

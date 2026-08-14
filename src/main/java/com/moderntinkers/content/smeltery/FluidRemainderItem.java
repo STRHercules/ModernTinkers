@@ -49,7 +49,7 @@ public final class FluidRemainderItem extends Item {
 
     public static ItemStack create(FluidStack fluid) {
         if (fluid == null || fluid.isEmpty() || fluid.getAmount() <= 0
-                || MaterialFluids.findByFluid(fluid.getFluid()) == null) {
+                || fluid.getFluid() == net.minecraft.world.level.material.Fluids.EMPTY) {
             return ItemStack.EMPTY;
         }
         ResourceLocation id = BuiltInRegistries.FLUID.getKey(fluid.getFluid());
@@ -76,7 +76,6 @@ public final class FluidRemainderItem extends Item {
         }
         var fluid = BuiltInRegistries.FLUID.get(id);
         return fluid == null || fluid == net.minecraft.world.level.material.Fluids.EMPTY
-                || MaterialFluids.findByFluid(fluid) == null
                 ? FluidStack.EMPTY : new FluidStack(fluid, amount);
     }
 
@@ -100,7 +99,7 @@ public final class FluidRemainderItem extends Item {
             @Override
             public boolean isFluidValid(int tank, FluidStack candidate) {
                 return tank == 0 && candidate != null && !candidate.isEmpty()
-                        && MaterialFluids.findByFluid(candidate.getFluid()) != null;
+                        && candidate.getFluid() != net.minecraft.world.level.material.Fluids.EMPTY;
             }
 
             @Override

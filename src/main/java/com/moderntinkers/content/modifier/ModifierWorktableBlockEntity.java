@@ -65,7 +65,7 @@ public final class ModifierWorktableBlockEntity extends BlockEntity implements M
         return !calculateResult().isEmpty();
     }
 
-    public void craft(Player player) {
+    public void craft(Player player, int resultCount) {
         Level level = getLevel();
         if (level == null || level.isClientSide) {
             return;
@@ -75,7 +75,7 @@ public final class ModifierWorktableBlockEntity extends BlockEntity implements M
             return;
         }
         ItemStack output = calculateResult();
-        if (output.isEmpty()) {
+        if (output.isEmpty() || resultCount <= 0 || resultCount != output.getCount()) {
             refreshResult();
             return;
         }
@@ -84,7 +84,7 @@ public final class ModifierWorktableBlockEntity extends BlockEntity implements M
                 ? extractionModifier(inputs.getItem(TOOL_SLOT)) : "";
         inputs.removeItem(TOOL_SLOT, 1);
         inputs.removeItem(MODIFIER_SLOT, 1);
-        output.onCraftedBy(level, player, 1);
+        output.onCraftedBy(level, player, resultCount);
         if (!extracted.isEmpty()) {
             ItemStack crystal = ModifierCrystalItem.withModifier(extracted);
             if (!player.getInventory().add(crystal)) {

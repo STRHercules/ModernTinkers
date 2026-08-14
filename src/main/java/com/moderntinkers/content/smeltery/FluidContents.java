@@ -20,13 +20,15 @@ final class FluidContents {
             return;
         }
         for (FluidTank tank : tanks) {
-            while (tank.getFluidAmount() >= BUCKET) {
-                FluidStack portion = tank.drain(BUCKET, IFluidHandler.FluidAction.SIMULATE);
-                if (portion.isEmpty() || portion.getAmount() != BUCKET) {
-                    break;
+            while (tank.getFluidAmount() > 0) {
+                FluidStack portion = tank.getFluid().copy();
+                portion.setAmount(Math.min(BUCKET, portion.getAmount()));
+                ItemStack container = portion.getAmount() == BUCKET
+                        ? FluidUtil.getFilledBucket(portion) : ItemStack.EMPTY;
+                if (container.isEmpty()) {
+                    container = FluidRemainderItem.create(portion);
                 }
-                ItemStack bucket = FluidUtil.getFilledBucket(portion);
-                if (bucket.isEmpty()) {
+                if (container.isEmpty()) {
                     break;
                 }
                 FluidStack drained = tank.drain(portion, IFluidHandler.FluidAction.EXECUTE);
@@ -34,20 +36,7 @@ final class FluidContents {
                     SmelteryFluidNetwork.restore(tank, drained);
                     break;
                 }
-                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), bucket);
-            }
-            if (tank.getFluidAmount() > 0) {
-                FluidStack remainder = tank.getFluid().copy();
-                ItemStack sample = FluidRemainderItem.create(remainder);
-                if (!sample.isEmpty()) {
-                    FluidStack drained = tank.drain(remainder,
-                            IFluidHandler.FluidAction.EXECUTE);
-                    if (SmelteryFluidNetwork.isExact(drained, remainder)) {
-                        Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), sample);
-                    } else {
-                        SmelteryFluidNetwork.restore(tank, drained);
-                    }
-                }
+                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), container);
             }
         }
     }

@@ -54,3 +54,12 @@
   assembly and material-aware melting.
 - Added the remaining registered tool IDs and initial special-tool area
   behavior, then advanced the project version to 1.2.8.
+
+## 2026-08-13 — Transaction and persistence hardening
+
+- Hardened table and anvil output pickup against partial shift-click transfers,
+  invalid material/part payloads, and mismatched result counts.
+- Preserved non-bucket fluid remainders through machine removal and allowed
+  persisted vanilla lava packets to survive faucet reloads alongside molten
+  material fluids.
+- Advanced the project version to 1.2.10.

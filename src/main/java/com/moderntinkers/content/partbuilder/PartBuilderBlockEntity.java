@@ -168,7 +168,8 @@ public final class PartBuilderBlockEntity extends BlockEntity implements MenuPro
     }
 
     public static boolean isRecyclingTool(ItemStack stack) {
-        if (!(stack.getItem() instanceof TinkersToolItem tool) || stack.isEnchanted()) {
+        if (!(stack.getItem() instanceof TinkersToolItem tool) || stack.isEnchanted()
+                || !TinkersToolItem.isAssembled(stack)) {
             return false;
         }
         CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();

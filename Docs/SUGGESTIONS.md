@@ -34,3 +34,8 @@
   interactions, smeltery transaction persistence, and the resource/data audit;
   then run a fresh client and dedicated-server smoke test before expanding into
   gadgets, entities, or optional integrations.
+
+## 2026-08-13 — Follow-up
+
+- Run client, dedicated-server, fresh-world, and multiplayer smoke tests for
+  the hardened table and smeltery transactions before declaring runtime parity.
