@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["GGG", "GSG", "GGG"],
+  "key": {
+    "G": {"item": "minecraft:gold_ingot"},
+    "S": {"item": "minecraft:sand"}
+  },
+  "result": {"id": "moderntinkers:tool_binding_cast"}
+}

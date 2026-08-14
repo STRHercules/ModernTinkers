@@ -46,6 +46,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.minecraft.nbt.Tag;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -77,7 +78,9 @@ public final class TinkersToolItem extends Item {
     /** Ammo consumed while loading a crossbow-family tool and fired later. */
     public static final String LOADED_AMMO_KEY = "moderntinkers:loaded_ammo";
     public static final int TOOL_TANK_CAPACITY = 4000;
+    public static final int MAX_TOOL_TANK_CAPACITY = 64_000;
     public static final int DEFAULT_MODIFIER_SLOTS = 3;
+    public static final int MAX_MODIFIER_SLOTS = 64;
     public static final int OVERSLIME_PER_REINFORCEMENT = 75;
 
     private final ToolKind kind;
@@ -95,6 +98,12 @@ public final class TinkersToolItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack tool = player.getItemInHand(hand);
+        if (!isAssembled(tool) && kind.parts.length == 0) {
+            onCraftedBy(tool, level, player);
+        }
+        if (!isAssembled(tool)) {
+            return InteractionResultHolder.fail(tool);
+        }
         boolean hasFluidInteraction = kind == ToolKind.SWASHER || kind == ToolKind.MELTING_PAN
                 || hasModifier(tool, "spilling") || hasModifier(tool, "spitting");
         if (hasFluidInteraction) {
@@ -312,7 +321,7 @@ public final class TinkersToolItem extends Item {
         if (kind == ToolKind.CROSSBOW || kind == ToolKind.WAR_PICK) {
             projectile.setSoundEvent(SoundEvents.CROSSBOW_HIT);
         }
-        projectile.pickup = kind.requiresAmmo()
+        projectile.pickup = kind.requiresAmmo() || kind == ToolKind.JAVELIN
                 ? (creative ? AbstractArrow.Pickup.CREATIVE_ONLY : AbstractArrow.Pickup.ALLOWED)
                 : AbstractArrow.Pickup.DISALLOWED;
         projectile.setBaseDamage(projectile.getBaseDamage() + kind.projectileDamage());
@@ -337,6 +346,9 @@ public final class TinkersToolItem extends Item {
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
+        if (!isAssembled(context.getItemInHand())) {
+            return InteractionResult.PASS;
+        }
         if (kind == ToolKind.FLINT_AND_BRICK) {
             return Items.FLINT_AND_STEEL.useOn(context);
         }
@@ -360,6 +372,9 @@ public final class TinkersToolItem extends Item {
     @Override
     public InteractionResult interactLivingEntity(ItemStack stack, Player player,
                                                    LivingEntity target, InteractionHand hand) {
+        if (!isAssembled(stack)) {
+            return InteractionResult.PASS;
+        }
         if (kind == ToolKind.SWASHER) {
             return Items.SHEARS.interactLivingEntity(stack, player, target, hand);
         }
@@ -374,7 +389,7 @@ public final class TinkersToolItem extends Item {
         CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
                 .copyTag();
         String id = tag.getString(TOOL_FLUID_KEY);
-        int amount = Math.max(0, Math.min(TOOL_TANK_CAPACITY,
+        int amount = Math.max(0, Math.min(toolTankCapacity(stack),
                 tag.getInt(TOOL_FLUID_AMOUNT_KEY)));
         if (id.isEmpty() || amount <= 0) {
             return FluidStack.EMPTY;
@@ -394,19 +409,34 @@ public final class TinkersToolItem extends Item {
      * storage they do not have.
      */
     public static boolean hasFluidTank(ItemStack stack) {
+        return toolTankCapacity(stack) > 0;
+    }
+
+    /** Returns the capacity granted by built-in fluid tools and tank modifiers. */
+    public static int toolTankCapacity(ItemStack stack) {
         if (stack.isEmpty()) {
-            return false;
+            return 0;
         }
-        if (stack.getItem() instanceof TinkersToolItem tool) {
-            return tool.kind == ToolKind.SWASHER || tool.kind == ToolKind.MELTING_PAN
-                    || hasModifier(stack, "tank")
-                    || hasModifier(stack, "spilling")
-                    || hasModifier(stack, "spitting");
+        if (stack.getItem() instanceof TinkersToolItem && !isAssembled(stack)) {
+            return 0;
         }
-        return (TinkersArmorItem.isArmor(stack) || stack.getItem() instanceof TinkersShieldItem)
-                && (hasModifier(stack, "tank")
-                || hasModifier(stack, "spilling")
-                || hasModifier(stack, "spitting"));
+        if (stack.getItem() instanceof TinkersArmorItem
+                && !TinkersArmorItem.isAssembled(stack)) {
+            return 0;
+        }
+        if (stack.getItem() instanceof TinkersShieldItem
+                && !TinkersShieldItem.isAssembled(stack)) {
+            return 0;
+        }
+        int capacity = modifierLevel(stack, "tank") * TOOL_TANK_CAPACITY;
+        if (stack.getItem() instanceof TinkersToolItem tool
+                && (tool.kind == ToolKind.SWASHER || tool.kind == ToolKind.MELTING_PAN)) {
+            capacity = Math.max(capacity, TOOL_TANK_CAPACITY);
+        }
+        if (hasModifier(stack, "spilling") || hasModifier(stack, "spitting")) {
+            capacity = Math.max(capacity, TOOL_TANK_CAPACITY);
+        }
+        return Math.min(MAX_TOOL_TANK_CAPACITY, Math.max(0, capacity));
     }
 
     /** Simulates or fills the compact tool tank with one compatible fluid. */
@@ -424,7 +454,11 @@ public final class TinkersToolItem extends Item {
         if (!stored.isEmpty() && stored.getFluid() != fluid.getFluid()) {
             return 0;
         }
-        int accepted = Math.min(fluid.getAmount(), TOOL_TANK_CAPACITY - stored.getAmount());
+        int capacity = toolTankCapacity(stack);
+        if (capacity <= 0) {
+            return 0;
+        }
+        int accepted = Math.min(fluid.getAmount(), capacity - stored.getAmount());
         if (accepted <= 0) {
             return 0;
         }
@@ -441,6 +475,9 @@ public final class TinkersToolItem extends Item {
     /** Drains at most the requested amount from the compact tool tank. */
     public static FluidStack drainToolFluid(ItemStack stack, int amount,
                                              net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction action) {
+        if (!hasFluidTank(stack)) {
+            return FluidStack.EMPTY;
+        }
         FluidStack stored = toolFluid(stack);
         if (stored.isEmpty() || amount <= 0) {
             return FluidStack.EMPTY;
@@ -719,12 +756,97 @@ public final class TinkersToolItem extends Item {
     }
 
     /**
+     * Validates the material payload before the stack enters a gameplay write.
+     * Item-type recognition remains separate so default creative stacks can
+     * still render before they are initialized by crafting.
+     */
+    public static boolean isAssembled(ItemStack stack) {
+        if (!(stack.getItem() instanceof TinkersToolItem tool)) {
+            return false;
+        }
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+                .copyTag();
+        if (!hasValidModifierPayload(stack)) {
+            return false;
+        }
+        String kindId = tag.getString(KIND_KEY);
+        if (!kindId.isEmpty() && !tool.kind.id.equals(kindId)) {
+            return false;
+        }
+        boolean hasIndexedParts = tag.contains(PARTS_KEY, CompoundTag.TAG_COMPOUND);
+        CompoundTag indexed = tag.getCompound(PARTS_KEY);
+        if (tag.contains(PARTS_KEY) && !hasIndexedParts) {
+            return false;
+        }
+        if (hasIndexedParts) {
+            if (indexed.getAllKeys().size() != tool.kind.parts.length) {
+                return false;
+            }
+            for (int index = 0; index < tool.kind.parts.length; index++) {
+                if (!indexed.contains(Integer.toString(index), CompoundTag.TAG_STRING)) {
+                    return false;
+                }
+            }
+        }
+        if (tool.kind.parts.length == 0) {
+            return tool.kind.id.equals(kindId) && hasIndexedParts;
+        }
+        for (int index = 0; index < tool.kind.parts.length; index++) {
+            if (MaterialManager.get(partMaterial(stack, tool.kind, index)) == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** Validates the shared modifier and slot payload used by all modifiable gear. */
+    public static boolean hasValidModifierPayload(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return false;
+        }
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+                .copyTag();
+        if (tag.contains(MODIFIER_SLOTS_KEY)
+                && !tag.contains(MODIFIER_SLOTS_KEY, Tag.TAG_INT)) {
+            return false;
+        }
+        int slots = tag.contains(MODIFIER_SLOTS_KEY)
+                ? tag.getInt(MODIFIER_SLOTS_KEY) : DEFAULT_MODIFIER_SLOTS;
+        if (slots < 1 || slots > MAX_MODIFIER_SLOTS) {
+            return false;
+        }
+        if (tag.contains(MODIFIERS_KEY)
+                && !tag.contains(MODIFIERS_KEY, Tag.TAG_COMPOUND)) {
+            return false;
+        }
+        CompoundTag modifiers = tag.getCompound(MODIFIERS_KEY);
+        int used = 0;
+        for (String modifier : modifiers.getAllKeys()) {
+            if (!ModifierManager.isKnown(modifier)
+                    || !modifiers.contains(modifier, Tag.TAG_INT)) {
+                return false;
+            }
+            int level = modifiers.getInt(modifier);
+            int maximum = ModifierManager.maxLevel(modifier);
+            if (level < 1 || level > maximum) {
+                return false;
+            }
+            int cost = ModifierManager.slotCost(modifier);
+            if (level > (slots - used) / cost) {
+                return false;
+            }
+            used += level * cost;
+        }
+        return true;
+    }
+
+    /**
      * Returns the material portions represented by an assembled tool.  Keeping
      * the parts separate matters for mixed-material tools: the melter must not
      * silently turn a handle or binding into the head material.
      */
     public static List<MaterialAmount> meltingMaterials(ItemStack stack) {
-        if (!(stack.getItem() instanceof TinkersToolItem tool)) {
+        if (!(stack.getItem() instanceof TinkersToolItem tool) || !isAssembled(stack)) {
             return List.of();
         }
         Map<String, Integer> amounts = new LinkedHashMap<>();
@@ -757,9 +879,9 @@ public final class TinkersToolItem extends Item {
         CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
                 .copyTag();
         CompoundTag parts = tag.getCompound(PARTS_KEY);
-        String indexed = parts.getString(Integer.toString(index));
-        if (!indexed.isEmpty()) {
-            return indexed;
+        String indexKey = Integer.toString(index);
+        if (parts.contains(indexKey, CompoundTag.TAG_STRING)) {
+            return parts.getString(indexKey);
         }
         return switch (index) {
             case 0 -> tag.getString(HEAD_KEY);
@@ -808,6 +930,9 @@ public final class TinkersToolItem extends Item {
 
     /** Maximum overslime from slimy materials and slimesteel reinforcement. */
     public static int overslimeCapacity(ItemStack stack) {
+        if (!isAssembledModifiable(stack)) {
+            return 0;
+        }
         int capacity = modifierLevel(stack, "slimesteel_reinforcement")
                 * OVERSLIME_PER_REINFORCEMENT;
         if (hasMaterialTrait(stack, "slimey") || hasMaterialTrait(stack, "slime")) {
@@ -885,12 +1010,18 @@ public final class TinkersToolItem extends Item {
 
     /** Effective overshield level, including armor material traits. */
     public static int overshieldLevel(ItemStack stack) {
+        if (!isAssembledModifiable(stack)) {
+            return 0;
+        }
         int level = modifierLevel(stack, "overshield");
         return level + (hasMaterialTrait(stack, "overshield") ? 1 : 0);
     }
 
     public static boolean hasMaterialTrait(ItemStack stack, String trait) {
         if (stack.getItem() instanceof TinkersToolItem tool) {
+            if (!isAssembled(stack)) {
+                return false;
+            }
             for (int index = 0; index < tool.kind.parts.length; index++) {
                 if (MaterialManager.hasTrait(partMaterial(stack, tool.kind, index), trait)) {
                     return true;
@@ -899,6 +1030,9 @@ public final class TinkersToolItem extends Item {
             return false;
         }
         if (TinkersArmorItem.isArmor(stack)) {
+            if (!TinkersArmorItem.isAssembled(stack)) {
+                return false;
+            }
             return MaterialManager.hasTrait(TinkersArmorItem.material(stack), trait)
                     || MaterialManager.hasTrait(
                     stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
@@ -906,6 +1040,9 @@ public final class TinkersToolItem extends Item {
                     || MaterialManager.hasTrait(TinkersArmorItem.slimeMaterial(stack), trait);
         }
         if (stack.getItem() instanceof TinkersShieldItem) {
+            if (!TinkersShieldItem.isAssembled(stack)) {
+                return false;
+            }
             CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
                     .copyTag();
             return MaterialManager.hasTrait(tag.getString(TinkersShieldItem.MATERIAL_KEY), trait)
@@ -914,6 +1051,9 @@ public final class TinkersToolItem extends Item {
                     || MaterialManager.hasTrait(tag.getString(TinkersShieldItem.HANDLE_KEY), trait);
         }
         if (stack.getItem() instanceof TinkersArrowItem) {
+            if (!TinkersArrowItem.isAssembled(stack)) {
+                return false;
+            }
             return MaterialManager.hasTrait(
                     stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
                             .copyTag().getString(TinkersArrowItem.HEAD_KEY), trait);
@@ -944,7 +1084,7 @@ public final class TinkersToolItem extends Item {
 
     /** Returns every material represented by a tool part and accepted for repair. */
     public static List<String> repairMaterials(ItemStack stack) {
-        if (!(stack.getItem() instanceof TinkersToolItem tool)) {
+        if (!(stack.getItem() instanceof TinkersToolItem tool) || !isAssembled(stack)) {
             return List.of();
         }
         java.util.LinkedHashSet<String> materials = new java.util.LinkedHashSet<>();
@@ -959,7 +1099,8 @@ public final class TinkersToolItem extends Item {
 
     /** Applies one level only when the complete modifier contract still holds. */
     public static boolean addModifier(ItemStack stack, String modifier) {
-        if (!ModifierManager.isKnown(modifier)
+        if (!isAssembledModifiable(stack)
+                || !ModifierManager.isKnown(modifier)
                 || !ModifierManager.canApply(modifier, stack)
                 || modifierLevel(stack, modifier) >= ModifierManager.maxLevel(modifier)
                 || !hasModifierCapacity(stack, modifier)) {
@@ -980,12 +1121,13 @@ public final class TinkersToolItem extends Item {
         if ("slimesteel_reinforcement".equals(modifier)) {
             addOverslime(stack, OVERSLIME_PER_REINFORCEMENT);
         }
+        sanitizeToolFluid(stack);
         return true;
     }
 
     /** Removes one stored level; built-in tool traits are never removable here. */
     public static boolean removeModifier(ItemStack stack, String modifier) {
-        if (!ModifierManager.isKnown(modifier)) {
+        if (!isAssembledModifiable(stack) || !ModifierManager.isKnown(modifier)) {
             return false;
         }
         CompoundTag stored = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
@@ -1014,7 +1156,29 @@ public final class TinkersToolItem extends Item {
         if ("slimesteel_reinforcement".equals(modifier)) {
             setOverslime(stack, overslimeAmount(stack));
         }
+        sanitizeToolFluid(stack);
         return true;
+    }
+
+    private static boolean isAssembledModifiable(ItemStack stack) {
+        return isAssembled(stack)
+                || TinkersArmorItem.isAssembled(stack)
+                || TinkersShieldItem.isAssembled(stack);
+    }
+
+    /** Removes or clamps tank payload after a modifier transaction changes capacity. */
+    private static void sanitizeToolFluid(ItemStack stack) {
+        int capacity = toolTankCapacity(stack);
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> {
+            int amount = tag.getInt(TOOL_FLUID_AMOUNT_KEY);
+            String fluid = tag.getString(TOOL_FLUID_KEY);
+            if (capacity <= 0 || amount <= 0 || fluid.isEmpty()) {
+                tag.remove(TOOL_FLUID_KEY);
+                tag.remove(TOOL_FLUID_AMOUNT_KEY);
+            } else {
+                tag.putInt(TOOL_FLUID_AMOUNT_KEY, Math.min(capacity, amount));
+            }
+        });
     }
 
     /** Rebuilds stack components after a modifier or datapack rule changes. */
@@ -1088,6 +1252,9 @@ public final class TinkersToolItem extends Item {
     }
 
     public static ItemStack assemble(Item item, ToolKind kind, ItemStack... parts) {
+        if (!(item instanceof TinkersToolItem tool) || tool.kind != kind) {
+            return ItemStack.EMPTY;
+        }
         if (parts.length != kind.parts.length) {
             return ItemStack.EMPTY;
         }
@@ -1161,6 +1328,9 @@ public final class TinkersToolItem extends Item {
 
     @Override
     public float getDestroySpeed(ItemStack stack, BlockState state) {
+        if (!isAssembled(stack)) {
+            return 1.0F;
+        }
         TagKey<Block> effectiveTag = effectiveTag(kind);
         if (effectiveTag == null || !state.is(effectiveTag)) {
             return 1.0F;
@@ -1185,6 +1355,9 @@ public final class TinkersToolItem extends Item {
 
     @Override
     public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
+        if (!isAssembled(stack)) {
+            return false;
+        }
         TagKey<Block> effectiveTag = effectiveTag(kind);
         if (effectiveTag == null || !state.is(effectiveTag)) {
             return false;
@@ -1215,6 +1388,9 @@ public final class TinkersToolItem extends Item {
 
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        if (!isAssembled(stack)) {
+            return false;
+        }
         applyProjectileEffects(stack, target, attacker);
         if (kind == ToolKind.SWASHER && !attacker.level().isClientSide) {
             FluidStack fluid = toolFluid(stack);
@@ -1240,6 +1416,9 @@ public final class TinkersToolItem extends Item {
     /** Applies modifier/material hit effects without spending projectile ammo or durability. */
     public void applyProjectileEffects(ItemStack stack, LivingEntity target,
                                        LivingEntity attacker) {
+        if (!isAssembled(stack)) {
+            return;
+        }
         int fiery = modifierLevel(stack, "fiery");
         if (fiery > 0) {
             target.setRemainingFireTicks(Math.max(target.getRemainingFireTicks(), (2 + fiery * 2) * 20));
@@ -1291,6 +1470,9 @@ public final class TinkersToolItem extends Item {
     @Override
     public boolean mineBlock(ItemStack stack, Level level, BlockState state,
                              net.minecraft.core.BlockPos pos, LivingEntity user) {
+        if (!isAssembled(stack)) {
+            return false;
+        }
         if (!level.isClientSide && state.getDestroySpeed(level, pos) != 0.0F) {
             if (!avoidsDamage(stack, user)) {
                 damageTool(stack, 1, user, EquipmentSlot.MAINHAND);

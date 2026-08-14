@@ -28,7 +28,7 @@ public final class TinkerItemFluidHandler implements IFluidHandlerItem {
     @Override
     public int getTankCapacity(int tank) {
         return TinkersToolItem.hasFluidTank(stack) && tank == 0
-                ? TinkersToolItem.TOOL_TANK_CAPACITY : 0;
+                ? TinkersToolItem.toolTankCapacity(stack) : 0;
     }
 
     @Override

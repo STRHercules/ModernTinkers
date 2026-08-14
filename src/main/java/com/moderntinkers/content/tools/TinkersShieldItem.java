@@ -38,12 +38,34 @@ public final class TinkersShieldItem extends ShieldItem {
         super(properties.stacksTo(1));
     }
 
+    /** Validates the core/plate/handle payload before a shield is modified. */
+    public static boolean isAssembled(ItemStack stack) {
+        if (!(stack.getItem() instanceof TinkersShieldItem)) {
+            return false;
+        }
+        var tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (!TinkersToolItem.hasValidModifierPayload(stack)) {
+            return false;
+        }
+        if (MaterialManager.get(tag.getString(MATERIAL_KEY)) == null) {
+            return false;
+        }
+        boolean plate = !tag.getString(CORE_KEY).isEmpty()
+                || !tag.getString(PLATING_KEY).isEmpty();
+        if (plate && (MaterialManager.get(tag.getString(CORE_KEY)) == null
+                || MaterialManager.get(tag.getString(PLATING_KEY)) == null)) {
+            return false;
+        }
+        String handle = tag.getString(HANDLE_KEY);
+        return handle.isEmpty() || MaterialManager.get(handle) != null;
+    }
+
     /** Held-item fallback for filling and firing a shield tank. */
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (TinkersToolItem.hasModifier(stack, "spilling")
-                || TinkersToolItem.hasModifier(stack, "spitting")) {
+        if (isAssembled(stack) && (TinkersToolItem.hasModifier(stack, "spilling")
+                || TinkersToolItem.hasModifier(stack, "spitting"))) {
             InteractionResult bucket = TinkersToolItem.useBucketInteraction(stack, player, hand);
             if (bucket.consumesAction()) {
                 return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
@@ -60,19 +82,19 @@ public final class TinkersShieldItem extends ShieldItem {
 
     @Override
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
-        return TinkersToolItem.hasModifier(stack, "spitting") ? 72000
+        return isAssembled(stack) && TinkersToolItem.hasModifier(stack, "spitting") ? 72000
                 : super.getUseDuration(stack, entity);
     }
 
     @Override
     public UseAnim getUseAnimation(ItemStack stack) {
-        return TinkersToolItem.hasModifier(stack, "spitting") ? UseAnim.BOW
+        return isAssembled(stack) && TinkersToolItem.hasModifier(stack, "spitting") ? UseAnim.BOW
                 : super.getUseAnimation(stack);
     }
 
     @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity living, int timeLeft) {
-        if (!level.isClientSide && living instanceof Player player
+        if (!level.isClientSide && isAssembled(stack) && living instanceof Player player
                 && TinkersToolItem.hasModifier(stack, "spitting")) {
             TinkersToolItem.spitFluid(stack, player, player.getUsedItemHand(),
                     getUseDuration(stack, player) - timeLeft);
@@ -80,7 +102,7 @@ public final class TinkersShieldItem extends ShieldItem {
     }
 
     public static List<TinkersToolItem.MaterialAmount> meltingMaterials(ItemStack stack) {
-        if (!(stack.getItem() instanceof TinkersShieldItem)) {
+        if (!isAssembled(stack)) {
             return List.of();
         }
         var tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
@@ -108,7 +130,7 @@ public final class TinkersShieldItem extends ShieldItem {
     }
 
     public static List<String> repairMaterials(ItemStack stack) {
-        if (!(stack.getItem() instanceof TinkersShieldItem)) {
+        if (!isAssembled(stack)) {
             return List.of();
         }
         var tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
@@ -123,14 +145,18 @@ public final class TinkersShieldItem extends ShieldItem {
     }
 
     public static ItemStack assemble(Item item, ItemStack core, ItemStack handle) {
+        if (!(item instanceof TinkersShieldItem) || !MaterialPartItem.isPart(core)) {
+            return ItemStack.EMPTY;
+        }
         String materialId = MaterialPartItem.getMaterial(core);
         MaterialDefinition definition = MaterialManager.get(materialId);
         if (definition == null || !MaterialPartItem.getPartId(core).equals("shield_core")) {
             return ItemStack.EMPTY;
         }
-        if (!handle.isEmpty() && (!MaterialPartItem.getPartId(handle).equals("tool_handle")
+        if (!handle.isEmpty() && (!MaterialPartItem.isPart(handle)
+                || (!MaterialPartItem.getPartId(handle).equals("tool_handle")
                 && !MaterialPartItem.getPartId(handle).equals("tough_handle")
-                || MaterialManager.get(MaterialPartItem.getMaterial(handle)) == null)) {
+                || MaterialManager.get(MaterialPartItem.getMaterial(handle)) == null))) {
             return ItemStack.EMPTY;
         }
         ItemStack result = new ItemStack(item);
@@ -156,6 +182,10 @@ public final class TinkersShieldItem extends ShieldItem {
 
     /** Builds the large plate shield using shield_core plus a cast plating input. */
     public static ItemStack assemblePlate(Item item, ItemStack core, ItemStack plating) {
+        if (!(item instanceof TinkersShieldItem)
+                || !MaterialPartItem.isPart(core) || !MaterialPartItem.isPart(plating)) {
+            return ItemStack.EMPTY;
+        }
         String coreMaterial = MaterialPartItem.getMaterial(core);
         String platingMaterial = MaterialPartItem.getMaterial(plating);
         if (!"shield_core".equals(MaterialPartItem.getPartId(core))

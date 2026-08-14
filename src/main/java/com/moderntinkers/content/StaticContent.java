@@ -210,6 +210,7 @@ public final class StaticContent {
     static {
         registerModifierItem("silky_cloth", "item.moderntinkers.silky_cloth.tooltip", false);
         registerModifierItem("dragon_scale", "item.moderntinkers.dragon_scale.tooltip", true);
+        registerModifierItem("dragonborn", "item.moderntinkers.dragonborn.tooltip", false);
         registerModifierItem("emerald_reinforcement", "item.moderntinkers.emerald_reinforcement.tooltip", false);
         registerModifierItem("slimesteel_reinforcement", "item.moderntinkers.slimesteel_reinforcement.tooltip", false);
         registerModifierItem("seared_reinforcement", "item.moderntinkers.seared_reinforcement.tooltip", false);
@@ -236,8 +237,11 @@ public final class StaticContent {
         registerModifierItem("experience", "item.moderntinkers.experience.tooltip", false);
         registerModifierItem("expanded", "item.moderntinkers.expanded.tooltip", false);
         registerModifierItem("spitting", "item.moderntinkers.spitting.tooltip", false);
+        registerModifierItem("tank", "item.moderntinkers.tank.tooltip", false);
         registerModifierItem("spilling", "item.moderntinkers.spilling.tooltip", false);
         registerModifierItem("overshield", "item.moderntinkers.overshield.tooltip", false);
+        registerModifierItem("snow_boots", "item.moderntinkers.snow_boots.tooltip", false);
+        registerModifierItem("endermask", "item.moderntinkers.endermask.tooltip", false);
     }
 
     public static final DeferredHolder<Block, Block> TINKER_STATION;

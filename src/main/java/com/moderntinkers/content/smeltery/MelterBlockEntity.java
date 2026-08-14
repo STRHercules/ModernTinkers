@@ -25,6 +25,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
@@ -42,6 +43,8 @@ public final class MelterBlockEntity extends BlockEntity implements MenuProvider
     public static final int PROCESS_TIME = 20;
     public static final int INPUT_SLOT = 0;
     public static final int FUEL_SLOT = 1;
+    private static final int MAX_SAVED_PROGRESS = 40;
+    private static final int MAX_SAVED_FUEL = 24_000;
 
     private final SimpleContainer inputs = new SimpleContainer(2) {
         @Override
@@ -98,10 +101,21 @@ public final class MelterBlockEntity extends BlockEntity implements MenuProvider
         if (progress >= plan.get().time()) {
             Plan current = plan().orElse(null);
             if (current != null && canFill(current.fluid())) {
-                tank.fill(current.fluid(), IFluidHandler.FluidAction.EXECUTE);
-                if (++meltStage >= current.outputs().size()) {
+                FluidStack before = tank.getFluid().copy();
+                int filled = tank.fill(current.fluid(), IFluidHandler.FluidAction.EXECUTE);
+                boolean outputMatches = filled == current.fluid().getAmount()
+                        && tank.getFluidAmount() == before.getAmount() + current.fluid().getAmount()
+                        && FluidStack.isSameFluid(tank.getFluid(), current.fluid());
+                if (outputMatches
+                        && ++meltStage >= current.outputs().size()) {
                     inputs.removeItem(INPUT_SLOT, current.inputCount());
                     resetMeltProgress();
+                } else if (!outputMatches && filled > 0) {
+                    FluidStack rolledBack = tank.drain(filled,
+                            IFluidHandler.FluidAction.EXECUTE);
+                    if (!SmelteryFluidNetwork.isExactAmount(rolledBack, current.fluid(), filled)) {
+                        setChanged();
+                    }
                 }
             }
             progress = 0;
@@ -160,11 +174,18 @@ public final class MelterBlockEntity extends BlockEntity implements MenuProvider
 
     private boolean consumeFuel(int requiredTemperature) {
         ItemStack fuel = inputs.getItem(FUEL_SLOT);
-        int burn = burnTime(fuel);
+        int burn = burnTime(level, fuel);
         if (burn > 0 && fuelTemperature(fuel) < requiredTemperature) {
             burn = 0;
         }
         if (burn <= 0) {
+            burn = consumeLavaFuel(level, worldPosition.below(), requiredTemperature);
+            if (burn > 0) {
+                fuelTime = burn;
+                fuelTotal = burn;
+                fuelTemperature = 2000;
+                return true;
+            }
             if (level != null && level.getBlockEntity(worldPosition.below())
                     instanceof HeaterBlockEntity heater) {
                 burn = heater.consumeFuel(requiredTemperature);
@@ -189,36 +210,40 @@ public final class MelterBlockEntity extends BlockEntity implements MenuProvider
         return true;
     }
 
-    static int burnTime(ItemStack stack) {
-        if (stack.isEmpty()) {
+    /** Consumes the reference lava-fuel packet from a tank directly below. */
+    static int consumeLavaFuel(Level level, BlockPos fuelPos, int requiredTemperature) {
+        if (level == null || requiredTemperature > 2000
+                || !(level.getBlockState(fuelPos).is(SmelteryContent.SEARED_TANK.get())
+                || level.getBlockState(fuelPos).is(SmelteryContent.SCORCHED_TANK.get()))
+                || !(level.getBlockEntity(fuelPos) instanceof FluidTankBlockEntity tank)) {
             return 0;
         }
-        if (stack.is(Items.LAVA_BUCKET)) {
-            return 20000;
+        FluidStack stored = tank.getTank().getFluid();
+        if (stored.isEmpty() || stored.getFluid() != Fluids.LAVA || stored.getAmount() < 50) {
+            return 0;
         }
-        if (stack.is(Items.BLAZE_ROD)) {
-            return 2400;
+        FluidStack drained = tank.getTank().drain(
+                new FluidStack(Fluids.LAVA, 50), IFluidHandler.FluidAction.EXECUTE);
+        if (drained.getAmount() != 50) {
+            if (!drained.isEmpty()) {
+                tank.getTank().fill(drained, IFluidHandler.FluidAction.EXECUTE);
+            }
+            return 0;
         }
-        if (stack.is(Items.COAL) || stack.is(Items.CHARCOAL)) {
-            return 1600;
-        }
-        if (stack.is(Items.BLAZE_POWDER)) {
-            return 1200;
-        }
-        return 0;
+        return 100;
+    }
+
+    static int burnTime(Level level, ItemStack stack) {
+        return TinkerRecipeManager.fuelDuration(level, stack);
+    }
+
+    /** Compatibility path for callers without a loaded level. */
+    static int burnTime(ItemStack stack) {
+        return TinkerRecipeManager.fuelDuration(null, stack);
     }
 
     static int fuelTemperature(ItemStack stack) {
-        if (stack.is(Items.LAVA_BUCKET)) {
-            return 2000;
-        }
-        if (stack.is(Items.BLAZE_ROD) || stack.is(Items.BLAZE_POWDER)) {
-            return 1400;
-        }
-        if (stack.is(Items.COAL) || stack.is(Items.CHARCOAL)) {
-            return 1000;
-        }
-        return 0;
+        return TinkerRecipeManager.fuelTemperature(stack);
     }
 
     public Container getInputInventory() {
@@ -242,7 +267,12 @@ public final class MelterBlockEntity extends BlockEntity implements MenuProvider
     }
 
     public static boolean isFuel(ItemStack stack) {
-        return burnTime(stack) > 0;
+        return TinkerRecipeManager.findFuel(stack) != null
+                || stack.getBurnTime(net.minecraft.world.item.crafting.RecipeType.SMELTING) > 0;
+    }
+
+    public static boolean isFuel(Level level, ItemStack stack) {
+        return burnTime(level, stack) > 0;
     }
 
     public static boolean isMeltable(ItemStack stack) {
@@ -298,13 +328,35 @@ public final class MelterBlockEntity extends BlockEntity implements MenuProvider
         inputs.fromTag(tag.getList("Items", Tag.TAG_COMPOUND), provider);
         if (tag.contains("Tank", Tag.TAG_COMPOUND)) {
             tank.readFromNBT(provider, tag.getCompound("Tank"));
+            if (!isValidLoadedFluid(tank.getFluid())) {
+                tank.drain(tank.getFluidAmount(), IFluidHandler.FluidAction.EXECUTE);
+            }
         }
-        progress = tag.getInt("Progress");
-        fuelTime = tag.getInt("FuelTime");
-        fuelTotal = tag.getInt("FuelTotal");
-        fuelTemperature = tag.getInt("FuelTemperature");
-        meltStage = tag.getInt("MeltStage");
+        ItemStack input = inputs.getItem(INPUT_SLOT);
+        if (!input.isEmpty() && !isMeltable(input)) {
+            inputs.setItem(INPUT_SLOT, ItemStack.EMPTY);
+        }
+        ItemStack loadedFuel = inputs.getItem(FUEL_SLOT);
+        if (!loadedFuel.isEmpty() && !isFuel(level, loadedFuel)) {
+            inputs.setItem(FUEL_SLOT, ItemStack.EMPTY);
+        } else if (!loadedFuel.isEmpty()) {
+            loadedFuel.setCount(Math.min(loadedFuel.getCount(), loadedFuel.getMaxStackSize()));
+        }
+        progress = Math.max(0, Math.min(MAX_SAVED_PROGRESS, tag.getInt("Progress")));
+        fuelTime = Math.max(0, Math.min(MAX_SAVED_FUEL, tag.getInt("FuelTime")));
+        fuelTotal = Math.max(0, Math.min(MAX_SAVED_FUEL, tag.getInt("FuelTotal")));
+        if (fuelTotal > 0) {
+            fuelTime = Math.min(fuelTime, fuelTotal);
+        } else {
+            fuelTime = 0;
+        }
+        fuelTemperature = Math.max(0, Math.min(10_000, tag.getInt("FuelTemperature")));
+        meltStage = Math.max(0, tag.getInt("MeltStage"));
         meltSignature = tag.getString("MeltSignature");
+        if (meltSignature.length() > 512) {
+            meltSignature = "";
+            meltStage = 0;
+        }
     }
 
     private void prepareStage(ItemStack input) {
@@ -322,6 +374,10 @@ public final class MelterBlockEntity extends BlockEntity implements MenuProvider
         meltSignature = "";
     }
 
+    private static boolean isValidLoadedFluid(FluidStack stack) {
+        return !stack.isEmpty() && MaterialFluids.findByFluid(stack.getFluid()) != null;
+    }
+
     public static List<FluidStack> meltingOutputs(ItemStack stack) {
         return meltingOutputs(stack, Math.max(1, stack.getCount()));
     }
@@ -334,13 +390,13 @@ public final class MelterBlockEntity extends BlockEntity implements MenuProvider
     public static List<FluidStack> meltingOutputs(ItemStack stack, int itemCount) {
         int count = Math.max(1, itemCount);
         List<TinkersToolItem.MaterialAmount> amounts = new ArrayList<>();
-        if (TinkersToolItem.isTool(stack)) {
+        if (TinkersToolItem.isAssembled(stack)) {
             amounts.addAll(TinkersToolItem.meltingMaterials(stack));
-        } else if (TinkersArmorItem.isArmor(stack)) {
+        } else if (TinkersArmorItem.isAssembled(stack)) {
             amounts.addAll(TinkersArmorItem.meltingMaterials(stack));
-        } else if (stack.getItem() instanceof TinkersShieldItem) {
+        } else if (TinkersShieldItem.isAssembled(stack)) {
             amounts.addAll(TinkersShieldItem.meltingMaterials(stack));
-        } else if (stack.getItem() instanceof TinkersArrowItem) {
+        } else if (TinkersArrowItem.isAssembled(stack)) {
             amounts.addAll(TinkersArrowItem.meltingMaterials(stack, count));
         } else if (MaterialPartItem.isPart(stack)) {
             String material = MaterialPartItem.getMaterial(stack);

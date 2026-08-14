@@ -60,12 +60,13 @@ public final class TinkersArmorItem extends ArmorItem {
 
     @Override
     public boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
-        return "gold".equals(material(stack)) || super.makesPiglinsNeutral(stack, wearer);
+        return isAssembled(stack)
+                && ("gold".equals(material(stack)) || super.makesPiglinsNeutral(stack, wearer));
     }
 
     @Override
     public boolean canWalkOnPowderedSnow(ItemStack stack, LivingEntity wearer) {
-        return getType() == Type.BOOTS
+        return isAssembled(stack) && getType() == Type.BOOTS
                 && (TinkersToolItem.hasModifier(stack, "snow_boots")
                 || MaterialManager.hasTrait(material(stack), "snow_boots")
                 || MaterialManager.hasTrait(customTag(stack).getString(MAILLE_KEY), "snow_boots"));
@@ -73,8 +74,9 @@ public final class TinkersArmorItem extends ArmorItem {
 
     @Override
     public boolean isEnderMask(ItemStack stack, Player player, EnderMan enderman) {
-        return getType() == Type.HELMET
-                && (MaterialManager.hasTrait(material(stack), "endermask")
+        return isAssembled(stack) && getType() == Type.HELMET
+                && (TinkersToolItem.hasModifier(stack, "endermask")
+                || MaterialManager.hasTrait(material(stack), "endermask")
                 || super.isEnderMask(stack, player, enderman));
     }
 
@@ -82,8 +84,8 @@ public final class TinkersArmorItem extends ArmorItem {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (TinkersToolItem.hasModifier(stack, "spilling")
-                || TinkersToolItem.hasModifier(stack, "spitting")) {
+        if (isAssembled(stack) && (TinkersToolItem.hasModifier(stack, "spilling")
+                || TinkersToolItem.hasModifier(stack, "spitting"))) {
             InteractionResult bucket = TinkersToolItem.useBucketInteraction(stack, player, hand);
             if (bucket.consumesAction()) {
                 return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
@@ -100,19 +102,19 @@ public final class TinkersArmorItem extends ArmorItem {
 
     @Override
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
-        return TinkersToolItem.hasModifier(stack, "spitting") ? 72000
+        return isAssembled(stack) && TinkersToolItem.hasModifier(stack, "spitting") ? 72000
                 : super.getUseDuration(stack, entity);
     }
 
     @Override
     public UseAnim getUseAnimation(ItemStack stack) {
-        return TinkersToolItem.hasModifier(stack, "spitting") ? UseAnim.BOW
+        return isAssembled(stack) && TinkersToolItem.hasModifier(stack, "spitting") ? UseAnim.BOW
                 : super.getUseAnimation(stack);
     }
 
     @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity living, int timeLeft) {
-        if (!level.isClientSide && living instanceof Player player
+        if (!level.isClientSide && isAssembled(stack) && living instanceof Player player
                 && TinkersToolItem.hasModifier(stack, "spitting")) {
             TinkersToolItem.spitFluid(stack, player, player.getUsedItemHand(),
                     getUseDuration(stack, player) - timeLeft);
@@ -123,8 +125,30 @@ public final class TinkersArmorItem extends ArmorItem {
         return !stack.isEmpty() && stack.getItem() instanceof TinkersArmorItem;
     }
 
+    /** Validates the material payload before armor enters a write transaction. */
+    public static boolean isAssembled(ItemStack stack) {
+        if (!(stack.getItem() instanceof TinkersArmorItem armor)) {
+            return false;
+        }
+        CompoundTag tag = customTag(stack);
+        if (!TinkersToolItem.hasValidModifierPayload(stack)) {
+            return false;
+        }
+        if (MaterialManager.get(tag.getString(MATERIAL_KEY)) == null) {
+            return false;
+        }
+        if (armor.family == Family.WINGS) {
+            return true;
+        }
+        if (armor.family == Family.SLIME) {
+            return MaterialManager.get(tag.getString(SLIME_KEY)) != null;
+        }
+        return armor.family != Family.PLATE
+                || MaterialManager.get(tag.getString(MAILLE_KEY)) != null;
+    }
+
     public static List<TinkersToolItem.MaterialAmount> meltingMaterials(ItemStack stack) {
-        if (!isArmor(stack)) {
+        if (!isAssembled(stack)) {
             return List.of();
         }
         TinkersArmorItem armor = (TinkersArmorItem) stack.getItem();
@@ -167,7 +191,7 @@ public final class TinkersArmorItem extends ArmorItem {
     }
 
     public static List<String> repairMaterials(ItemStack stack) {
-        if (!isArmor(stack)) {
+        if (!isAssembled(stack)) {
             return List.of();
         }
         LinkedHashSet<String> materials = new LinkedHashSet<>();
@@ -185,7 +209,10 @@ public final class TinkersArmorItem extends ArmorItem {
 
     /** Builds travelers, plate, generic, or slime-suit armor from indexed parts. */
     public static ItemStack assemble(Item item, Type type, ItemStack primary, ItemStack secondary) {
-        Family family = item instanceof TinkersArmorItem armor ? armor.family : Family.TINKERS;
+        if (!(item instanceof TinkersArmorItem armor) || armor.getType() != type) {
+            return ItemStack.EMPTY;
+        }
+        Family family = armor.family;
         if (family == Family.WINGS) {
             return ItemStack.EMPTY;
         }
@@ -381,12 +408,13 @@ public final class TinkersArmorItem extends ArmorItem {
 
     @Override
     public boolean canElytraFly(ItemStack stack, LivingEntity entity) {
-        return isWings() && ElytraItem.isFlyEnabled(stack);
+        return isAssembled(stack) && isWings() && ElytraItem.isFlyEnabled(stack);
     }
 
     @Override
     public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
-        return isWings() && ((ElytraItem) Items.ELYTRA).elytraFlightTick(stack, entity, flightTicks);
+        return isAssembled(stack) && isWings()
+                && ((ElytraItem) Items.ELYTRA).elytraFlightTick(stack, entity, flightTicks);
     }
 
     private static final class CompoundModifierTooltip {

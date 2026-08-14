@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {"item": "minecraft:leather_boots"},
+    {"item": "minecraft:snow_block"}
+  ],
+  "result": {"id": "moderntinkers:snow_boots"}
+}

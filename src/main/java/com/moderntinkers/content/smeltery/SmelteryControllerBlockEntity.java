@@ -35,6 +35,7 @@ public final class SmelteryControllerBlockEntity extends BlockEntity implements 
     public static final int INPUT_SLOTS = 3;
     public static final int FUEL_SLOT = 3;
     public static final int PROCESS_TIME = 10;
+    private static final int MAX_SAVED_FUEL = 24_000;
 
     private final SimpleContainer inputs = new SimpleContainer(INPUT_SLOTS + 1) {
         @Override
@@ -95,10 +96,21 @@ public final class SmelteryControllerBlockEntity extends BlockEntity implements 
         if (progress >= PROCESS_TIME) {
             Plan current = plan().orElse(null);
             if (current != null && canFill(current.fluid())) {
-                tank.fill(current.fluid(), IFluidHandler.FluidAction.EXECUTE);
-                if (++meltStage >= current.outputs().size()) {
+                FluidStack before = tank.getFluid().copy();
+                int filled = tank.fill(current.fluid(), IFluidHandler.FluidAction.EXECUTE);
+                boolean outputMatches = filled == current.fluid().getAmount()
+                        && tank.getFluidAmount() == before.getAmount() + current.fluid().getAmount()
+                        && FluidStack.isSameFluid(tank.getFluid(), current.fluid());
+                if (outputMatches
+                        && ++meltStage >= current.outputs().size()) {
                     inputs.removeItem(current.slot(), current.inputCount());
                     resetMeltProgress();
+                } else if (!outputMatches && filled > 0) {
+                    FluidStack rolledBack = tank.drain(filled,
+                            IFluidHandler.FluidAction.EXECUTE);
+                    if (!SmelteryFluidNetwork.isExactAmount(rolledBack, current.fluid(), filled)) {
+                        setChanged();
+                    }
                 }
             }
             progress = 0;
@@ -187,7 +199,7 @@ public final class SmelteryControllerBlockEntity extends BlockEntity implements 
 
     private boolean consumeFuel(int requiredTemperature) {
         ItemStack fuel = inputs.getItem(FUEL_SLOT);
-        int burn = MelterBlockEntity.burnTime(fuel);
+        int burn = MelterBlockEntity.burnTime(level, fuel);
         if (burn > 0 && MelterBlockEntity.fuelTemperature(fuel) >= requiredTemperature) {
             fuelTime = burn;
             fuelTotal = burn;
@@ -198,6 +210,13 @@ public final class SmelteryControllerBlockEntity extends BlockEntity implements 
             if (fuel.isEmpty() && remainder != null) {
                 inputs.setItem(FUEL_SLOT, new ItemStack(remainder));
             }
+            return true;
+        }
+        burn = MelterBlockEntity.consumeLavaFuel(level, worldPosition.below(), requiredTemperature);
+        if (burn > 0) {
+            fuelTime = burn;
+            fuelTotal = burn;
+            fuelTemperature = 2000;
             return true;
         }
         if (level != null && level.getBlockEntity(worldPosition.below())
@@ -276,13 +295,37 @@ public final class SmelteryControllerBlockEntity extends BlockEntity implements 
         inputs.fromTag(tag.getList("Items", Tag.TAG_COMPOUND), provider);
         if (tag.contains("Tank", Tag.TAG_COMPOUND)) {
             tank.readFromNBT(provider, tag.getCompound("Tank"));
+            if (!isValidLoadedFluid(tank.getFluid())) {
+                tank.drain(tank.getFluidAmount(), IFluidHandler.FluidAction.EXECUTE);
+            }
         }
-        progress = tag.getInt("Progress");
-        fuelTime = tag.getInt("FuelTime");
-        fuelTotal = tag.getInt("FuelTotal");
-        fuelTemperature = tag.getInt("FuelTemperature");
-        meltStage = tag.getInt("MeltStage");
+        for (int slot = 0; slot < INPUT_SLOTS; slot++) {
+            ItemStack input = inputs.getItem(slot);
+            if (!input.isEmpty() && !MelterBlockEntity.isMeltable(input)) {
+                inputs.setItem(slot, ItemStack.EMPTY);
+            }
+        }
+        ItemStack loadedFuel = inputs.getItem(FUEL_SLOT);
+        if (!loadedFuel.isEmpty() && !MelterBlockEntity.isFuel(level, loadedFuel)) {
+            inputs.setItem(FUEL_SLOT, ItemStack.EMPTY);
+        } else if (!loadedFuel.isEmpty()) {
+            loadedFuel.setCount(Math.min(loadedFuel.getCount(), loadedFuel.getMaxStackSize()));
+        }
+        progress = Math.max(0, Math.min(PROCESS_TIME, tag.getInt("Progress")));
+        fuelTime = Math.max(0, Math.min(MAX_SAVED_FUEL, tag.getInt("FuelTime")));
+        fuelTotal = Math.max(0, Math.min(MAX_SAVED_FUEL, tag.getInt("FuelTotal")));
+        if (fuelTotal > 0) {
+            fuelTime = Math.min(fuelTime, fuelTotal);
+        } else {
+            fuelTime = 0;
+        }
+        fuelTemperature = Math.max(0, Math.min(10_000, tag.getInt("FuelTemperature")));
+        meltStage = Math.max(0, tag.getInt("MeltStage"));
         meltSignature = tag.getString("MeltSignature");
+        if (meltSignature.length() > 512) {
+            meltSignature = "";
+            meltStage = 0;
+        }
     }
 
     private void prepareStage(int slot, ItemStack input) {
@@ -298,6 +341,10 @@ public final class SmelteryControllerBlockEntity extends BlockEntity implements 
     private void resetMeltProgress() {
         meltStage = 0;
         meltSignature = "";
+    }
+
+    private static boolean isValidLoadedFluid(FluidStack stack) {
+        return !stack.isEmpty() && MaterialFluids.findByFluid(stack.getFluid()) != null;
     }
 
     private record Plan(int slot, List<FluidStack> outputs, FluidStack fluid,

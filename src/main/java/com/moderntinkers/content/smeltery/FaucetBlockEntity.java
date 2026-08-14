@@ -1,5 +1,6 @@
 package com.moderntinkers.content.smeltery;
 
+import com.moderntinkers.content.fluid.MaterialFluids;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -104,7 +105,7 @@ public final class FaucetBlockEntity extends BlockEntity {
                 return;
             }
         }
-        if (stopPouring) {
+        if (stopPouring || !lastRedstoneState) {
             reset();
         } else if (!startPacket()) {
             state = lastRedstoneState ? FaucetState.POWERED : FaucetState.OFF;
@@ -128,13 +129,14 @@ public final class FaucetBlockEntity extends BlockEntity {
         if (simulated.isEmpty()) {
             return false;
         }
-        int accepted = target.fill(simulated, IFluidHandler.FluidAction.SIMULATE);
+        int accepted = Math.min(PACKET_SIZE,
+                target.fill(simulated, IFluidHandler.FluidAction.SIMULATE));
         if (accepted <= 0) {
             return false;
         }
         FluidStack request = simulated.copy();
         request.setAmount(accepted);
-        FluidStack drained = source.drain(request, IFluidHandler.FluidAction.EXECUTE);
+        FluidStack drained = SmelteryFluidNetwork.drainExact(source, request);
         if (drained.isEmpty()) {
             return false;
         }
@@ -162,7 +164,23 @@ public final class FaucetBlockEntity extends BlockEntity {
         }
         portion.setAmount(accepted);
         int filled = target.fill(portion, IFluidHandler.FluidAction.EXECUTE);
-        if (filled > 0) {
+        if (filled != accepted) {
+            int reported = Math.max(0, Math.min(filled, accepted));
+            FluidStack rollbackRequest = portion.copy();
+            rollbackRequest.setAmount(reported);
+            FluidStack rolledBack = reported == 0
+                    ? FluidStack.EMPTY : target.drain(rollbackRequest, IFluidHandler.FluidAction.EXECUTE);
+            int rolledBackAmount = rolledBack != null && !rolledBack.isEmpty()
+                    && FluidStack.isSameFluid(rolledBack, portion)
+                    ? Math.min(reported, rolledBack.getAmount()) : 0;
+            int retained = reported - rolledBackAmount;
+            if (retained > 0) {
+                buffered.shrink(retained);
+            }
+            setChanged();
+            return;
+        }
+        if (filled == accepted) {
             buffered.shrink(filled);
             if (buffered.isEmpty()) {
                 renderFluid = FluidStack.EMPTY;
@@ -207,6 +225,31 @@ public final class FaucetBlockEntity extends BlockEntity {
         renderFluid = tag.contains("RenderFluid", Tag.TAG_COMPOUND)
                 ? FluidStack.parse(provider, tag.getCompound("RenderFluid")).orElse(FluidStack.EMPTY)
                 : FluidStack.EMPTY;
+        buffered = sanitize(buffered, PACKET_SIZE);
+        renderFluid = sanitize(renderFluid, PACKET_SIZE);
+        if (buffered.isEmpty()) {
+            renderFluid = FluidStack.EMPTY;
+            if (state == FaucetState.POURING) {
+                state = lastRedstoneState ? FaucetState.POWERED : FaucetState.OFF;
+            }
+        } else {
+            renderFluid = buffered.copy();
+            state = FaucetState.POURING;
+        }
+    }
+
+    private static FluidStack sanitize(FluidStack stack, int maxAmount) {
+        if (stack == null || stack.isEmpty()
+                || MaterialFluids.findByFluid(stack.getFluid()) == null) {
+            return FluidStack.EMPTY;
+        }
+        int amount = Math.min(maxAmount, Math.max(0, stack.getAmount()));
+        if (amount <= 0) {
+            return FluidStack.EMPTY;
+        }
+        FluidStack copy = stack.copy();
+        copy.setAmount(amount);
+        return copy;
     }
 
     private enum FaucetState {

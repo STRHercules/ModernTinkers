@@ -119,6 +119,10 @@ public final class SmelteryContent {
             "foundry_controller", FOUNDRY_CONTROLLER);
     public static final DeferredHolder<Item, Item> FLUID_REMAINDER = ITEMS.register(
             "fluid_remainder", () -> new FluidRemainderItem(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> BLANK_SAND_CAST = ITEMS.register(
+            "blank_sand_cast", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> BLANK_RED_SAND_CAST = ITEMS.register(
+            "blank_red_sand_cast", () -> new Item(new Item.Properties()));
 
     public static final DeferredHolder<Item, Item> INGOT_CAST = registerCast(
             "ingot_cast", CastingCastItem.Form.INGOT, "");
@@ -141,6 +145,8 @@ public final class SmelteryContent {
                 "plating_helmet", "plating_chestplate", "plating_leggings", "plating_boots",
                 "maille", "shield_core", "skull", "ribcage", "shell", "laces", "slime")) {
             registerCast(part + "_cast", CastingCastItem.Form.PART, part);
+            registerCast(part + "_sand_cast", CastingCastItem.Form.PART, part, false);
+            registerCast(part + "_red_sand_cast", CastingCastItem.Form.PART, part, false);
         }
     }
 
@@ -268,6 +274,8 @@ public final class SmelteryContent {
         output.accept(SCORCHED_BRICKS_ITEM.get());
         output.accept(SMELTERY_CONTROLLER_ITEM.get());
         output.accept(FOUNDRY_CONTROLLER_ITEM.get());
+        output.accept(BLANK_SAND_CAST.get());
+        output.accept(BLANK_RED_SAND_CAST.get());
         CASTS.forEach(cast -> output.accept(cast.get()));
     }
 

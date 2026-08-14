@@ -24,7 +24,7 @@ public final class ModifiableArrowEntity extends StackProjectileEntity {
     }
 
     private void applyAmmoStats(ItemStack ammo) {
-        if (ammo.getItem() instanceof TinkersArrowItem) {
+        if (TinkersArrowItem.isAssembled(ammo)) {
             String material = TinkersToolItem.material(ammo, TinkersArrowItem.HEAD_KEY);
             var definition = com.moderntinkers.content.material.MaterialManager.get(material);
             if (definition != null) {

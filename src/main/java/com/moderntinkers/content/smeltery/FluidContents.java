@@ -30,10 +30,8 @@ final class FluidContents {
                     break;
                 }
                 FluidStack drained = tank.drain(portion, IFluidHandler.FluidAction.EXECUTE);
-                if (drained.getAmount() != BUCKET) {
-                    if (!drained.isEmpty()) {
-                        tank.fill(drained, IFluidHandler.FluidAction.EXECUTE);
-                    }
+                if (!SmelteryFluidNetwork.isExact(drained, portion)) {
+                    SmelteryFluidNetwork.restore(tank, drained);
                     break;
                 }
                 Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), bucket);
@@ -44,10 +42,10 @@ final class FluidContents {
                 if (!sample.isEmpty()) {
                     FluidStack drained = tank.drain(remainder,
                             IFluidHandler.FluidAction.EXECUTE);
-                    if (drained.getAmount() == remainder.getAmount()) {
+                    if (SmelteryFluidNetwork.isExact(drained, remainder)) {
                         Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), sample);
-                    } else if (!drained.isEmpty()) {
-                        tank.fill(drained, IFluidHandler.FluidAction.EXECUTE);
+                    } else {
+                        SmelteryFluidNetwork.restore(tank, drained);
                     }
                 }
             }

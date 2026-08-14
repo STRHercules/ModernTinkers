@@ -3,6 +3,7 @@ package com.moderntinkers.content.modifier;
 import com.moderntinkers.content.tools.TinkersArmorItem;
 import com.moderntinkers.content.tools.TinkersShieldItem;
 import com.moderntinkers.content.tools.TinkersToolItem;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.LinkedHashMap;
@@ -41,10 +42,13 @@ public final class ModifierManager {
         tool("haste", 5);
         tool("expanded", 5);
         tool("spitting", 3);
+        any("tank", 5);
         any("spilling", 1);
         any("overshield", 5);
 
-        any("dragon_scale", 1);
+        armor("snow_boots", 1);
+        armor("endermask", 1);
+        armor("dragonborn", 5);
         any("emerald_reinforcement", 5);
         any("slimesteel_reinforcement", 5);
         any("seared_reinforcement", 5);
@@ -89,10 +93,23 @@ public final class ModifierManager {
             return false;
         }
         return switch (definition.target()) {
-            case TOOL -> TinkersToolItem.isTool(stack);
-            case ANY -> TinkersToolItem.isTool(stack)
-                    || TinkersArmorItem.isArmor(stack)
-                    || stack.getItem() instanceof TinkersShieldItem;
+            case TOOL -> TinkersToolItem.isAssembled(stack);
+            case ANY -> TinkersToolItem.isAssembled(stack)
+                    || TinkersArmorItem.isAssembled(stack)
+                    || TinkersShieldItem.isAssembled(stack);
+            case ARMOR -> {
+                if (!(stack.getItem() instanceof TinkersArmorItem armor)) {
+                    yield false;
+                }
+                if (!TinkersArmorItem.isAssembled(stack)) {
+                    yield false;
+                }
+                yield switch (id) {
+                    case "snow_boots" -> armor.getType() == ArmorItem.Type.BOOTS;
+                    case "endermask" -> armor.getType() == ArmorItem.Type.HELMET;
+                    default -> true;
+                };
+            }
         };
     }
 
@@ -104,6 +121,10 @@ public final class ModifierManager {
         DEFINITIONS.put(id, new Definition(id, maxLevel, 1, Target.ANY));
     }
 
+    private static void armor(String id, int maxLevel) {
+        DEFINITIONS.put(id, new Definition(id, maxLevel, 1, Target.ARMOR));
+    }
+
     public record Definition(String id, int maxLevel, int slotsPerLevel, Target target) {
         public Definition {
             maxLevel = Math.max(1, maxLevel);
@@ -113,6 +134,7 @@ public final class ModifierManager {
 
     public enum Target {
         TOOL,
-        ANY
+        ANY,
+        ARMOR
     }
 }

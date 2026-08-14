@@ -97,16 +97,16 @@ public final class CastingBlockEntity extends BlockEntity implements MenuProvide
         }
         int amount = castItem.amount();
         ItemStack output = castItem.createOutput(currentMaterialId());
+        FluidStack expected = tank.getFluid().copy();
+        expected.setAmount(amount);
+        FluidStack simulated = tank.drain(amount, IFluidHandler.FluidAction.SIMULATE);
         if (amount <= 0 || output.isEmpty() || resultCount != output.getCount()
-                || tank.drain(amount, IFluidHandler.FluidAction.SIMULATE).getAmount() != amount) {
+                || !SmelteryFluidNetwork.isExact(simulated, expected)) {
             refreshResult();
             return;
         }
-        FluidStack drained = tank.drain(amount, IFluidHandler.FluidAction.EXECUTE);
-        if (drained.getAmount() != amount) {
-            if (!drained.isEmpty()) {
-                tank.fill(drained, IFluidHandler.FluidAction.EXECUTE);
-            }
+        FluidStack drained = SmelteryFluidNetwork.drainExact(tank, expected);
+        if (drained.isEmpty()) {
             refreshResult();
             return;
         }
@@ -159,10 +159,23 @@ public final class CastingBlockEntity extends BlockEntity implements MenuProvide
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
         cast.fromTag(tag.getList("Cast", Tag.TAG_COMPOUND), provider);
+        ItemStack loadedCast = cast.getItem(CAST_SLOT);
+        if (!(loadedCast.getItem() instanceof CastingCastItem)) {
+            cast.setItem(CAST_SLOT, ItemStack.EMPTY);
+        } else {
+            loadedCast.setCount(Math.min(loadedCast.getCount(), loadedCast.getMaxStackSize()));
+        }
         if (tag.contains("Tank", Tag.TAG_COMPOUND)) {
             tank.readFromNBT(provider, tag.getCompound("Tank"));
+            if (!isValidLoadedFluid(tank.getFluid())) {
+                tank.drain(tank.getFluidAmount(), IFluidHandler.FluidAction.EXECUTE);
+            }
         }
         refreshResult();
+    }
+
+    private static boolean isValidLoadedFluid(FluidStack stack) {
+        return !stack.isEmpty() && MaterialFluids.findByFluid(stack.getFluid()) != null;
     }
 
     private final class CallbackTank extends FluidTank {

@@ -34,6 +34,7 @@ public final class AlloyerBlockEntity extends BlockEntity implements MenuProvide
     /** Five inputs match the five non-output sides used by the reference mixer. */
     private static final int INPUT_TANKS = 5;
     private static final int PROCESS_TIME = 20;
+    private static final int MAX_SAVED_FUEL = 24_000;
 
     private final FluidTank first = new CallbackTank();
     private final FluidTank second = new CallbackTank();
@@ -93,12 +94,7 @@ public final class AlloyerBlockEntity extends BlockEntity implements MenuProvide
         progress++;
         if (progress >= PROCESS_TIME) {
             AlloyMatch current = findMatch();
-            if (current != null && output.fill(current.result(), IFluidHandler.FluidAction.SIMULATE)
-                    == current.result().getAmount()) {
-                for (TankDrain drain : current.inputs()) {
-                    drain.tank().drain(drain.amount(), IFluidHandler.FluidAction.EXECUTE);
-                }
-                output.fill(current.result(), IFluidHandler.FluidAction.EXECUTE);
+            if (current != null && completeAlloy(current)) {
                 progress = 0;
             }
         }
@@ -110,8 +106,15 @@ public final class AlloyerBlockEntity extends BlockEntity implements MenuProvide
         if (level == null) {
             return false;
         }
-        return level.getBlockEntity(worldPosition.below()) instanceof HeaterBlockEntity
-                || SmelteryFluidNetwork.findController(level, worldPosition) != null;
+        if (SmelteryFluidNetwork.findController(level, worldPosition) != null) {
+            return true;
+        }
+        BlockPos fuelSource = worldPosition.below();
+        BlockState fuelState = level.getBlockState(fuelSource);
+        return level.getBlockEntity(fuelSource) instanceof HeaterBlockEntity
+                || (fuelState.is(SmelteryContent.SEARED_TANK.get())
+                || fuelState.is(SmelteryContent.SCORCHED_TANK.get()))
+                && level.getBlockEntity(fuelSource) instanceof FluidTankBlockEntity;
     }
 
     /** Pulls from adjacent seared/scorched tanks without losing fluid on partial fills. */
@@ -133,24 +136,7 @@ public final class AlloyerBlockEntity extends BlockEntity implements MenuProvide
                 continue;
             }
             FluidTank target = inputTank(side);
-            FluidStack simulated = source.drain(90, IFluidHandler.FluidAction.SIMULATE);
-            if (simulated.isEmpty()) {
-                continue;
-            }
-            int accepted = target.fill(simulated, IFluidHandler.FluidAction.SIMULATE);
-            if (accepted <= 0) {
-                continue;
-            }
-            FluidStack drained = source.drain(accepted, IFluidHandler.FluidAction.EXECUTE);
-            if (drained.isEmpty()) {
-                continue;
-            }
-            int filled = target.fill(drained, IFluidHandler.FluidAction.EXECUTE);
-            if (filled < drained.getAmount()) {
-                FluidStack remainder = drained.copy();
-                remainder.setAmount(drained.getAmount() - filled);
-                source.fill(remainder, IFluidHandler.FluidAction.EXECUTE);
-            }
+            SmelteryFluidNetwork.transferExact(source, target, 90);
         }
     }
 
@@ -178,7 +164,7 @@ public final class AlloyerBlockEntity extends BlockEntity implements MenuProvide
                     break;
                 }
                 used[tankIndex] = true;
-                drains.add(new TankDrain(inputs[tankIndex], required.amount()));
+                drains.add(new TankDrain(inputs[tankIndex], required.amount(), required.fluidId()));
             }
             if (!matched) {
                 continue;
@@ -192,14 +178,88 @@ public final class AlloyerBlockEntity extends BlockEntity implements MenuProvide
         return null;
     }
 
+    /** Completes an alloy only when every input and the full output transfer succeed. */
+    private boolean completeAlloy(AlloyMatch match) {
+        if (output.fill(match.result(), IFluidHandler.FluidAction.SIMULATE)
+                != match.result().getAmount()) {
+            return false;
+        }
+        for (TankDrain requirement : match.inputs()) {
+            FluidStack simulated = requirement.tank().drain(requirement.amount(),
+                    IFluidHandler.FluidAction.SIMULATE);
+            if (simulated.getAmount() != requirement.amount()
+                    || !requirement.fluidId().equals(fluidId(simulated))) {
+                return false;
+            }
+        }
+
+        // Reserve the result before mutating any input. The tanks are all on
+        // the server thread, so a successful simulation should be enough for
+        // the normal path; keeping the rollback still protects capability
+        // implementations that violate that contract.
+        FluidStack outputBefore = output.getFluid().copy();
+        int filled = output.fill(match.result(), IFluidHandler.FluidAction.EXECUTE);
+        boolean outputMatches = filled == match.result().getAmount()
+                && output.getFluidAmount() == outputBefore.getAmount() + match.result().getAmount()
+                && FluidStack.isSameFluid(output.getFluid(), match.result());
+        if (!outputMatches) {
+            if (filled > 0) {
+                rollbackOutput(match.result(), filled);
+            }
+            return false;
+        }
+
+        List<FluidStack> executed = new ArrayList<>();
+        for (int index = 0; index < match.inputs().size(); index++) {
+            TankDrain requirement = match.inputs().get(index);
+            FluidStack expected = requirement.tank().getFluid().copy();
+            expected.setAmount(requirement.amount());
+            FluidStack actual = requirement.tank().drain(requirement.amount(),
+                    IFluidHandler.FluidAction.EXECUTE);
+            if (!SmelteryFluidNetwork.isExact(actual, expected)
+                    || !requirement.fluidId().equals(fluidId(actual))) {
+                if (!actual.isEmpty()) {
+                    executed.add(actual);
+                }
+                refund(match.inputs(), executed);
+                rollbackOutput(match.result(), filled);
+                return false;
+            }
+            executed.add(actual);
+        }
+        return true;
+    }
+
+    private boolean rollbackOutput(FluidStack expected, int amount) {
+        FluidStack rolledBack = output.drain(Math.max(0, amount),
+                IFluidHandler.FluidAction.EXECUTE);
+        return SmelteryFluidNetwork.isExactAmount(rolledBack, expected, amount);
+    }
+
+    private static void refund(List<TankDrain> requirements, List<FluidStack> drained) {
+        for (int index = 0; index < drained.size() && index < requirements.size(); index++) {
+            FluidStack portion = drained.get(index);
+            if (!portion.isEmpty()) {
+                requirements.get(index).tank().fill(portion, IFluidHandler.FluidAction.EXECUTE);
+            }
+        }
+    }
+
     private boolean consumeFuel(int requiredTemperature) {
         ItemStack stack = fuel.getItem(0);
-        int burn = MelterBlockEntity.burnTime(stack);
+        int burn = MelterBlockEntity.burnTime(level, stack);
         if (burn > 0 && MelterBlockEntity.fuelTemperature(stack) >= requiredTemperature) {
             fuelTemperature = MelterBlockEntity.fuelTemperature(stack);
             fuelTime = burn;
             fuelTotal = burn;
             consumeFuelStack(stack);
+            return true;
+        }
+        burn = MelterBlockEntity.consumeLavaFuel(level, worldPosition.below(), requiredTemperature);
+        if (burn > 0) {
+            fuelTime = burn;
+            fuelTotal = burn;
+            fuelTemperature = 2000;
             return true;
         }
         if (level != null && level.getBlockEntity(worldPosition.below())
@@ -325,20 +385,38 @@ public final class AlloyerBlockEntity extends BlockEntity implements MenuProvide
         if (tag.contains("Fuel", Tag.TAG_COMPOUND)) {
             fuel.fromTag(tag.getList("Fuel", Tag.TAG_COMPOUND), provider);
         }
-        progress = tag.getInt("Progress");
-        fuelTime = tag.getInt("FuelTime");
-        fuelTotal = tag.getInt("FuelTotal");
-        fuelTemperature = tag.getInt("FuelTemperature");
+        ItemStack loadedFuel = fuel.getItem(0);
+        if (!loadedFuel.isEmpty() && !MelterBlockEntity.isFuel(loadedFuel)) {
+            fuel.setItem(0, ItemStack.EMPTY);
+        } else if (!loadedFuel.isEmpty()) {
+            loadedFuel.setCount(Math.min(loadedFuel.getCount(), loadedFuel.getMaxStackSize()));
+        }
+        progress = Math.max(0, Math.min(PROCESS_TIME, tag.getInt("Progress")));
+        fuelTime = Math.max(0, Math.min(MAX_SAVED_FUEL, tag.getInt("FuelTime")));
+        fuelTotal = Math.max(0, Math.min(MAX_SAVED_FUEL, tag.getInt("FuelTotal")));
+        if (fuelTotal > 0) {
+            fuelTime = Math.min(fuelTime, fuelTotal);
+        } else {
+            fuelTime = 0;
+        }
+        fuelTemperature = Math.max(0, Math.min(10_000, tag.getInt("FuelTemperature")));
     }
 
     private static void readTank(CompoundTag tag, String key, FluidTank tank,
                                  HolderLookup.Provider provider) {
         if (tag.contains(key, Tag.TAG_COMPOUND)) {
             tank.readFromNBT(provider, tag.getCompound(key));
+            if (!isValidLoadedFluid(tank.getFluid())) {
+                tank.drain(tank.getFluidAmount(), IFluidHandler.FluidAction.EXECUTE);
+            }
         }
     }
 
-    private record TankDrain(FluidTank tank, int amount) {}
+    private static boolean isValidLoadedFluid(FluidStack stack) {
+        return !stack.isEmpty() && MaterialFluids.findByFluid(stack.getFluid()) != null;
+    }
+
+    private record TankDrain(FluidTank tank, int amount, String fluidId) {}
 
     private record AlloyMatch(List<TankDrain> inputs, FluidStack result, int temperature) {}
 

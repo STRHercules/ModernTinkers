@@ -59,12 +59,12 @@ public final class TinkersToolEvents {
 
     public static void onBlockDrops(BlockDropsEvent event) {
         ItemStack tool = event.getTool();
-        if (tool.getItem() instanceof TinkersToolItem tinkerTool
+        if (TinkersToolItem.isAssembled(tool) && tool.getItem() instanceof TinkersToolItem tinkerTool
                 && tinkerTool.kind() == TinkersToolItem.ToolKind.MELTING_PAN
                 && tinkerTool.isCorrectToolForDrops(tool, event.getState())) {
             meltDropsIntoTool(tool, event);
         }
-        if (tool.getItem() instanceof TinkersToolItem tinkerTool
+        if (TinkersToolItem.isAssembled(tool) && tool.getItem() instanceof TinkersToolItem tinkerTool
                 && tinkerTool.kind() == TinkersToolItem.ToolKind.WAR_PICK
                 && event.getBreaker() instanceof Player player
                 && TinkersToolItem.hasArrow(player)) {
@@ -72,7 +72,7 @@ public final class TinkersToolEvents {
             // cannot grant the war-pick's charge.
             TinkersToolItem.addWarCharge(tool);
         }
-        if (!TinkersToolItem.isTool(tool)) {
+        if (!TinkersToolItem.isAssembled(tool)) {
             return;
         }
         if (TinkersToolItem.hasModifier(tool, "silky_cloth")) {
@@ -125,7 +125,7 @@ public final class TinkersToolEvents {
                 continue;
             }
             int possible = Math.min(drop.getCount(),
-                    TinkersToolItem.TOOL_TANK_CAPACITY / perItem.getAmount());
+                    TinkersToolItem.toolTankCapacity(tool) / perItem.getAmount());
             if (possible <= 0) {
                 continue;
             }
@@ -160,7 +160,7 @@ public final class TinkersToolEvents {
 
     /** Breaks the compact 3x3 mining plane, vein, or tree owned by the tool. */
     public static void onBlockBreak(BlockEvent.BreakEvent event) {
-        if (AREA_BREAK.get()) {
+        if (event.isCanceled() || AREA_BREAK.get()) {
             return;
         }
         LivingTool livingTool = LivingTool.from(event.getPlayer().getMainHandItem());
@@ -252,9 +252,12 @@ public final class TinkersToolEvents {
                 BlockPos target = planeOffset(origin, look, first, second);
                 if (is3D) {
                     for (int depth = 0; depth <= radius && !tool.stack().isEmpty(); depth++) {
-                        breakAdditional(level, player, target.relative(look, depth), tool);
+                        BlockPos depthTarget = target.relative(look, depth);
+                        if (!depthTarget.equals(origin)) {
+                            breakAdditional(level, player, depthTarget, tool);
+                        }
                     }
-                } else {
+                } else if (!target.equals(origin)) {
                     breakAdditional(level, player, target, tool);
                 }
             }
@@ -522,7 +525,7 @@ public final class TinkersToolEvents {
 
     public static void onBreakSpeed(PlayerEvent.BreakSpeed event) {
         ItemStack tool = event.getEntity().getMainHandItem();
-        if (!TinkersToolItem.isTool(tool)) {
+        if (!TinkersToolItem.isAssembled(tool)) {
             return;
         }
         int haste = TinkersToolItem.modifierLevel(tool, "haste");
@@ -544,7 +547,7 @@ public final class TinkersToolEvents {
             return;
         }
         ItemStack tool = player.getMainHandItem();
-        if (!TinkersToolItem.isTool(tool)) {
+        if (!TinkersToolItem.isAssembled(tool)) {
             return;
         }
         int looting = TinkersToolItem.modifierLevel(tool, "looting");
@@ -614,7 +617,7 @@ public final class TinkersToolEvents {
         for (EquipmentSlot slot : List.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST,
                 EquipmentSlot.LEGS, EquipmentSlot.FEET)) {
             ItemStack armor = event.getArmorItemStack(slot);
-            if (!TinkersArmorItem.isArmor(armor)) {
+            if (!TinkersArmorItem.isAssembled(armor)) {
                 continue;
             }
             float reduction = 0.05F * TinkersToolItem.modifierLevel(armor, "cobalt_reinforcement");
@@ -632,6 +635,9 @@ public final class TinkersToolEvents {
                 reduction += 0.10F * TinkersToolItem.modifierLevel(armor,
                         "gold_reinforcement");
             }
+            if (isAirborne(event.getEntity())) {
+                reduction += 0.10F * TinkersToolItem.modifierLevel(armor, "dragonborn");
+            }
             Float original = event.getOriginalDamage(slot);
             if (original != null && reduction > 0.0F) {
                 event.setNewDamage(slot, original * Math.max(0.0F, 1.0F - Math.min(0.8F, reduction)));
@@ -641,8 +647,9 @@ public final class TinkersToolEvents {
 
     public static void onShieldBlock(LivingShieldBlockEvent event) {
         ItemStack shield = event.getEntity().getUseItem();
-        boolean tinkerShield = shield.getItem() instanceof TinkersShieldItem;
-        boolean battlesign = shield.getItem() instanceof TinkersToolItem tool
+        boolean tinkerShield = TinkersShieldItem.isAssembled(shield);
+        boolean battlesign = TinkersToolItem.isAssembled(shield)
+                && shield.getItem() instanceof TinkersToolItem tool
                 && tool.kind() == TinkersToolItem.ToolKind.BATTLESIGN;
         if (!tinkerShield && !battlesign) {
             return;
@@ -656,9 +663,16 @@ public final class TinkersToolEvents {
     /** Battlesigns are tools rather than ShieldItems, so they need their own block path. */
     public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
         LivingEntity entity = event.getEntity();
+        LivingEntity attacker = event.getSource().getEntity() instanceof LivingEntity living
+                ? living : null;
+        if (attacker != null && attacker != entity && isAirborne(attacker)
+                && !event.getSource().is(DamageTypeTags.BYPASSES_ARMOR)) {
+            int dragonborn = highestModifier(attacker, "dragonborn");
+            if (dragonborn > 0) {
+                event.setAmount(event.getAmount() * (1.0F + 0.05F * dragonborn));
+            }
+        }
         if (!entity.level().isClientSide && event.getAmount() > 0.0F) {
-            LivingEntity attacker = event.getSource().getEntity() instanceof LivingEntity living
-                    ? living : null;
             if (attacker != null && attacker != entity) {
                 for (ItemStack armor : entity.getArmorSlots()) {
                     TinkersToolItem.spillFluid(armor, attacker, entity, 1.0F);
@@ -667,7 +681,8 @@ public final class TinkersToolEvents {
             }
         }
         ItemStack shield = entity.getUseItem();
-        if (shield.getItem() instanceof TinkersToolItem tool
+        if (TinkersToolItem.isAssembled(shield)
+                && shield.getItem() instanceof TinkersToolItem tool
                 && tool.kind() == TinkersToolItem.ToolKind.BATTLESIGN
                 && canBattlesignBlock(entity, event.getSource())
                 && event.getAmount() > 0.0F) {
@@ -703,15 +718,29 @@ public final class TinkersToolEvents {
         event.setAmount(remaining);
     }
 
+    private static boolean isAirborne(LivingEntity entity) {
+        return !entity.onGround() && !entity.isInWater() && !entity.onClimbable();
+    }
+
+    private static int highestModifier(LivingEntity entity, String modifier) {
+        int highest = 0;
+        for (ItemStack stack : entity.getArmorSlots()) {
+            if (TinkersArmorItem.isAssembled(stack)) {
+                highest = Math.max(highest, TinkersToolItem.modifierLevel(stack, modifier));
+            }
+        }
+        return highest;
+    }
+
     private static List<ItemStack> protectedEquipment(LivingEntity entity) {
         List<ItemStack> result = new java.util.ArrayList<>();
         for (ItemStack stack : entity.getArmorSlots()) {
-            if (TinkersArmorItem.isArmor(stack)) {
+            if (TinkersArmorItem.isAssembled(stack)) {
                 result.add(stack);
             }
         }
         ItemStack offhand = entity.getOffhandItem();
-        if (offhand.getItem() instanceof TinkersShieldItem) {
+        if (TinkersShieldItem.isAssembled(offhand)) {
             result.add(offhand);
         }
         return result;
@@ -752,8 +781,8 @@ public final class TinkersToolEvents {
     }
 
     private static boolean isModifiable(ItemStack stack) {
-        return TinkersToolItem.isTool(stack) || TinkersArmorItem.isArmor(stack)
-                || stack.getItem() instanceof TinkersShieldItem;
+        return TinkersToolItem.isAssembled(stack) || TinkersArmorItem.isAssembled(stack)
+                || TinkersShieldItem.isAssembled(stack);
     }
 
     private static boolean isHeadDrop(ItemStack stack) {
@@ -774,7 +803,7 @@ public final class TinkersToolEvents {
         if (player == null) {
             return;
         }
-        if (!TinkersToolItem.isTool(player.getMainHandItem())) {
+        if (!TinkersToolItem.isAssembled(player.getMainHandItem())) {
             return;
         }
         int luck = TinkersToolItem.modifierLevel(player.getMainHandItem(), "luck");
@@ -797,7 +826,7 @@ public final class TinkersToolEvents {
         boolean fireResistant = false;
         boolean aquatic = false;
         for (ItemStack stack : event.getEntity().getArmorSlots()) {
-            if (!TinkersArmorItem.isArmor(stack)) {
+            if (!TinkersArmorItem.isAssembled(stack)) {
                 continue;
             }
             fireResistant |= TinkersToolItem.hasMaterialTrait(stack, "flamewake")
@@ -829,7 +858,8 @@ public final class TinkersToolEvents {
     private record LivingTool(ItemStack stack, TinkersToolItem tool,
                               TinkersToolItem.ToolKind kind) {
         private static LivingTool from(ItemStack stack) {
-            return stack.getItem() instanceof TinkersToolItem tool
+            return TinkersToolItem.isAssembled(stack)
+                    && stack.getItem() instanceof TinkersToolItem tool
                     ? new LivingTool(stack, tool, tool.kind()) : null;
         }
 

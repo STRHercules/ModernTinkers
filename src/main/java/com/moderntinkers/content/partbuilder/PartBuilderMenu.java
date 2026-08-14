@@ -54,6 +54,15 @@ public final class PartBuilderMenu extends AbstractContainerMenu {
             }
 
             @Override
+            public ItemStack remove(int amount) {
+                ItemStack current = getItem();
+                if (!current.isEmpty() && amount < current.getCount()) {
+                    return ItemStack.EMPTY;
+                }
+                return super.remove(amount);
+            }
+
+            @Override
             public void onTake(Player player, ItemStack stack) {
                 if (blockEntity != null) {
                     blockEntity.craft(player, stack.getCount());

@@ -42,8 +42,8 @@ public final class TinkersAnvilBlockEntity extends BlockEntity implements MenuPr
     }
 
     public static boolean isTool(ItemStack stack) {
-        return TinkersToolItem.isTool(stack) || TinkersArmorItem.isArmor(stack)
-                || stack.getItem() instanceof TinkersShieldItem;
+        return TinkersToolItem.isAssembled(stack) || TinkersArmorItem.isAssembled(stack)
+                || TinkersShieldItem.isAssembled(stack);
     }
 
     public static boolean isRepairMaterial(ItemStack stack) {

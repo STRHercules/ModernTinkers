@@ -1,0 +1,7 @@
+[
+  {"item":"minecraft:lava_bucket","duration":20000,"temperature":2000},
+  {"item":"minecraft:blaze_rod","duration":2400,"temperature":1400},
+  {"item":"minecraft:blaze_powder","duration":1200,"temperature":1400},
+  {"item":"minecraft:coal","duration":1600,"temperature":1000},
+  {"item":"minecraft:charcoal","duration":1600,"temperature":1000}
+]

@@ -28,13 +28,23 @@ public final class TinkersArrowItem extends ArrowItem {
         super(properties.stacksTo(64));
     }
 
+    public static boolean isAssembled(ItemStack stack) {
+        if (!(stack.getItem() instanceof TinkersArrowItem)) {
+            return false;
+        }
+        var tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        return MaterialManager.get(tag.getString(HEAD_KEY)) != null
+                && MaterialManager.get(tag.getString(SHAFT_KEY)) != null
+                && MaterialManager.get(tag.getString(FLETCHING_KEY)) != null;
+    }
+
     public static List<TinkersToolItem.MaterialAmount> meltingMaterials(ItemStack stack) {
         return meltingMaterials(stack, Math.max(1, stack.getCount()));
     }
 
     public static List<TinkersToolItem.MaterialAmount> meltingMaterials(ItemStack stack,
                                                                          int itemCount) {
-        if (!(stack.getItem() instanceof TinkersArrowItem)) {
+        if (!isAssembled(stack)) {
             return List.of();
         }
         var tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
@@ -56,6 +66,12 @@ public final class TinkersArrowItem extends ArrowItem {
 
     public static ItemStack assemble(Item item, ItemStack head, ItemStack shaft,
                                      ItemStack fletching) {
+        if (!(item instanceof TinkersArrowItem)
+                || !MaterialPartItem.isPart(head)
+                || !MaterialPartItem.isPart(shaft)
+                || !MaterialPartItem.isPart(fletching)) {
+            return ItemStack.EMPTY;
+        }
         String headMaterial = MaterialPartItem.getMaterial(head);
         String shaftMaterial = MaterialPartItem.getMaterial(shaft);
         String fletchingMaterial = MaterialPartItem.getMaterial(fletching);
@@ -84,7 +100,7 @@ public final class TinkersArrowItem extends ArrowItem {
         Arrow arrow = new Arrow(level, shooter, stack, weapon);
         String material = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
                 .copyTag().getString(HEAD_KEY);
-        MaterialDefinition definition = MaterialManager.get(material);
+        MaterialDefinition definition = isAssembled(stack) ? MaterialManager.get(material) : null;
         if (definition != null) {
             arrow.setBaseDamage(arrow.getBaseDamage() + definition.headAttackDamage() * 0.25D);
         }

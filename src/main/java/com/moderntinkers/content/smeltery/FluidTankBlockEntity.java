@@ -7,6 +7,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
@@ -43,26 +44,8 @@ public final class FluidTankBlockEntity extends BlockEntity {
         if (controller == null) {
             return;
         }
-        FluidStack available = component.tank.drain(90, IFluidHandler.FluidAction.SIMULATE);
-        if (available.isEmpty()) {
-            return;
-        }
-        int accepted = controller.getFluidHandler().fill(available,
-                IFluidHandler.FluidAction.SIMULATE);
-        if (accepted <= 0) {
-            return;
-        }
-        FluidStack drained = component.tank.drain(accepted, IFluidHandler.FluidAction.EXECUTE);
-        if (drained.isEmpty()) {
-            return;
-        }
-        int filled = controller.getFluidHandler().fill(drained,
-                IFluidHandler.FluidAction.EXECUTE);
-        if (filled < drained.getAmount()) {
-            FluidStack remainder = drained.copy();
-            remainder.setAmount(drained.getAmount() - filled);
-            component.tank.fill(remainder, IFluidHandler.FluidAction.EXECUTE);
-        }
+        SmelteryFluidNetwork.transferExact(component.tank,
+                controller.getFluidHandler(), 90);
     }
 
     public FluidTank getTank() {
@@ -80,13 +63,27 @@ public final class FluidTankBlockEntity extends BlockEntity {
         super.loadAdditional(tag, provider);
         if (tag.contains("Tank", Tag.TAG_COMPOUND)) {
             tank.readFromNBT(provider, tag.getCompound("Tank"));
+            if (!isAllowed(tank.getFluid())) {
+                tank.drain(tank.getFluidAmount(), IFluidHandler.FluidAction.EXECUTE);
+            }
         }
+    }
+
+    private boolean isAllowed(FluidStack stack) {
+        return !stack.isEmpty()
+                && (com.moderntinkers.content.fluid.MaterialFluids.findByFluid(stack.getFluid()) != null
+                || stack.getFluid() == Fluids.LAVA
+                && (getBlockState().is(SmelteryContent.SEARED_TANK.get())
+                || getBlockState().is(SmelteryContent.SCORCHED_TANK.get())));
     }
 
     private final class CallbackTank extends FluidTank {
         private CallbackTank() {
             super(CAPACITY, stack -> com.moderntinkers.content.fluid.MaterialFluids
-                    .findByFluid(stack.getFluid()) != null);
+                    .findByFluid(stack.getFluid()) != null
+                    || stack.getFluid() == Fluids.LAVA
+                    && (getBlockState().is(SmelteryContent.SEARED_TANK.get())
+                    || getBlockState().is(SmelteryContent.SCORCHED_TANK.get())));
         }
 
         @Override

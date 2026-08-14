@@ -79,30 +79,83 @@ final class SmelteryFluidNetwork {
         if (controller == null) {
             return false;
         }
-        FluidStack simulated = controller.getFluidHandler().drain(
-                amount, IFluidHandler.FluidAction.SIMULATE);
-        if (simulated.isEmpty()
-                || target.fill(simulated, IFluidHandler.FluidAction.SIMULATE)
-                != simulated.getAmount()) {
+        return transferExact(controller.getFluidHandler(), target, amount);
+    }
+
+    /** Moves one simulated packet and rolls back any partial or mismatched execution. */
+    static boolean transferExact(IFluidHandler source, IFluidHandler target, int amount) {
+        if (source == null || target == null || amount <= 0) {
             return false;
         }
-        FluidStack drained = controller.getFluidHandler().drain(
-                simulated, IFluidHandler.FluidAction.EXECUTE);
-        if (drained.isEmpty()) {
+        FluidStack simulated = source.drain(amount, IFluidHandler.FluidAction.SIMULATE);
+        if (simulated.isEmpty()) {
+            return false;
+        }
+        int expected = simulated.getAmount();
+        if (target.fill(simulated, IFluidHandler.FluidAction.SIMULATE) != expected) {
+            return false;
+        }
+        FluidStack drained = source.drain(simulated, IFluidHandler.FluidAction.EXECUTE);
+        if (!isExact(drained, simulated)) {
+            restore(source, drained);
             return false;
         }
         int filled = target.fill(drained, IFluidHandler.FluidAction.EXECUTE);
-        if (filled == drained.getAmount()) {
+        if (filled == expected) {
             return true;
         }
-        if (filled > 0) {
-            FluidStack remainder = drained.copy();
-            remainder.setAmount(drained.getAmount() - filled);
-            controller.getFluidHandler().fill(remainder, IFluidHandler.FluidAction.EXECUTE);
-        } else {
-            controller.getFluidHandler().fill(drained, IFluidHandler.FluidAction.EXECUTE);
-        }
+
+        int accepted = Math.max(0, Math.min(filled, expected));
+        FluidStack rollbackRequest = drained.copy();
+        rollbackRequest.setAmount(accepted);
+        FluidStack rolledBack = accepted == 0
+                ? FluidStack.EMPTY : target.drain(rollbackRequest, IFluidHandler.FluidAction.EXECUTE);
+        int removed = rolledBack != null && !rolledBack.isEmpty()
+                && FluidStack.isSameFluid(rolledBack, drained)
+                ? Math.min(accepted, rolledBack.getAmount()) : 0;
+        int retained = accepted - removed;
+        FluidStack refund = drained.copy();
+        refund.setAmount(Math.max(0, expected - retained));
+        restore(source, refund);
         return false;
+    }
+
+    /** Executes a previously simulated drain, rejecting and refunding mismatches. */
+    static FluidStack drainExact(IFluidHandler source, FluidStack expected) {
+        if (source == null || expected == null || expected.isEmpty()) {
+            return FluidStack.EMPTY;
+        }
+        FluidStack simulated = source.drain(expected, IFluidHandler.FluidAction.SIMULATE);
+        if (!isExact(simulated, expected)) {
+            return FluidStack.EMPTY;
+        }
+        FluidStack drained = source.drain(expected, IFluidHandler.FluidAction.EXECUTE);
+        if (isExact(drained, expected)) {
+            return drained;
+        }
+        restore(source, drained);
+        return FluidStack.EMPTY;
+    }
+
+    static boolean isExact(FluidStack actual, FluidStack expected) {
+        return isExactAmount(actual, expected, expected == null ? 0 : expected.getAmount())
+                && (expected == null || FluidStack.isSameFluid(actual, expected));
+    }
+
+    static boolean isExactAmount(FluidStack actual, FluidStack expected, int amount) {
+        return amount == 0 ? actual == null || actual.isEmpty()
+                : actual != null && actual.getAmount() == amount
+                && !actual.isEmpty()
+                && expected != null
+                && FluidStack.isSameFluid(actual, expected);
+    }
+
+    static void restore(IFluidHandler target, FluidStack stack) {
+        if (target != null && stack != null && !stack.isEmpty()) {
+            if (target.fill(stack, IFluidHandler.FluidAction.SIMULATE) == stack.getAmount()) {
+                target.fill(stack, IFluidHandler.FluidAction.EXECUTE);
+            }
+        }
     }
 
     static boolean isRoutingComponent(BlockState state) {

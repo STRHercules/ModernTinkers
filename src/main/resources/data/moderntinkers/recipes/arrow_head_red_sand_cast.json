@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["GGG", "GSG", "GGG"],
+  "key": {
+    "G": {"item": "minecraft:gold_ingot"},
+    "S": {"item": "minecraft:red_sand"}
+  },
+  "result": {"id": "moderntinkers:arrow_head_red_sand_cast"}
+}

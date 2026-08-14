@@ -3,7 +3,7 @@
   "category": "misc",
   "pattern": ["CDC", "TCT", "CDC"],
   "key": {
-    "C": {"item": "moderntinkers:copper_ingot"},
+    "C": {"item": "minecraft:copper_ingot"},
     "D": {"item": "moderntinkers:seared_channel"},
     "T": {"item": "moderntinkers:seared_tank"}
   },

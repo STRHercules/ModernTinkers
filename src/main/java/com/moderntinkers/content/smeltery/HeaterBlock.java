@@ -38,7 +38,7 @@ public final class HeaterBlock extends BaseEntityBlock {
             BlockHitResult hit) {
         BlockEntity entity = level.getBlockEntity(pos);
         if (!(entity instanceof HeaterBlockEntity heater)
-                || !MelterBlockEntity.isFuel(stack) || !heater.insertFuel(stack)) {
+                || !MelterBlockEntity.isFuel(level, stack) || !heater.insertFuel(stack)) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         return ItemInteractionResult.sidedSuccess(level.isClientSide);

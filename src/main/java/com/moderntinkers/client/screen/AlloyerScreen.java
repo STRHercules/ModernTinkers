@@ -17,6 +17,7 @@ public final class AlloyerScreen extends AbstractContainerScreen<AlloyerMenu> {
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         graphics.fill(leftPos, topPos, leftPos + imageWidth, topPos + imageHeight, 0xFF282020);
+        graphics.fill(leftPos + 150, topPos + 31, leftPos + 168, topPos + 49, 0xFF171313);
         graphics.fill(leftPos + 36, topPos + 30, leftPos + 61, topPos + 55, 0xFF665149);
         graphics.fill(leftPos + 72, topPos + 30, leftPos + 97, topPos + 55, 0xFF665149);
         graphics.fill(leftPos + 108, topPos + 30, leftPos + 136, topPos + 55, 0xFF56392C);

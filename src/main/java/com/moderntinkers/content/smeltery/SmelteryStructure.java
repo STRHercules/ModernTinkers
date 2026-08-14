@@ -48,7 +48,7 @@ public record SmelteryStructure(boolean formed, int radius, int height, int inte
     }
 
     public int volume() {
-        return radius * radius * height;
+        return interiorVolume;
     }
 
     /** Four buckets for the base tank plus one bucket per usable interior cell. */
@@ -64,7 +64,7 @@ public record SmelteryStructure(boolean formed, int radius, int height, int inte
         int x = target.getX() - controller.getX();
         int y = target.getY() - controller.getY();
         int z = target.getZ() - controller.getZ();
-        return y >= 0 && y <= height && Math.abs(x) <= radius && Math.abs(z) <= radius;
+        return y >= 0 && y < height && Math.abs(x) <= radius && Math.abs(z) <= radius;
     }
 
     private static boolean ringValid(Level level, BlockPos center, int radius, int y,
@@ -127,6 +127,9 @@ public record SmelteryStructure(boolean formed, int radius, int height, int inte
                 || state.is(SmelteryContent.OBSIDIAN_GAUGE.get())
                 || state.is(SmelteryContent.SEARED_CASTING_TANK.get())
                 || state.is(SmelteryContent.CASTING_TABLE.get())
-                || state.is(SmelteryContent.CASTING_BASIN.get());
+                || state.is(SmelteryContent.CASTING_BASIN.get())
+                || state.is(SmelteryContent.MELTER.get())
+                || state.is(SmelteryContent.ALLOYER.get())
+                || state.is(SmelteryContent.HEATER.get());
     }
 }

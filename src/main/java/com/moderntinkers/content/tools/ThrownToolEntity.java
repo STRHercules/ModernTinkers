@@ -29,7 +29,10 @@ public final class ThrownToolEntity extends StackProjectileEntity {
             tool.applyProjectileEffects(storedStack(), livingTarget, livingOwner);
         }
         damageStoredToolOnImpact();
-        if (!hit && !isRemoved() && !storedStack().isEmpty()) {
+        // Javelins are reusable: a successful hit returns the damaged stack as
+        // well as a miss or block hit.  Losing it only when durability breaks
+        // matches the reference thrown-tool contract.
+        if (!isRemoved() && !storedStack().isEmpty()) {
             spawnAtLocation(storedStack().copy());
         }
         discard();

@@ -146,7 +146,8 @@ public final class TinkerStationBlockEntity extends BlockEntity implements MenuP
                         shieldCore, plate);
             }
             ItemStack handle = list.firstMatching("tool_handle", "tough_handle");
-            if (handle.isEmpty() || list.count() == 2) {
+            if ((handle.isEmpty() && list.count() == 1)
+                    || (!handle.isEmpty() && list.count() == 2)) {
                 return TinkersShieldItem.assemble(StaticContent.TRAVELERS_SHIELD.get(),
                         shieldCore, handle);
             }

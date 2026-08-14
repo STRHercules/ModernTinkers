@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 /** Small persistent fuel buffer consumed by the melter above it. */
 public final class HeaterBlockEntity extends BlockEntity {
+    private static final int MAX_SAVED_TEMPERATURE = 10_000;
     private int fuelTemperature;
     private final SimpleContainer fuel = new SimpleContainer(1) {
         @Override
@@ -31,7 +32,7 @@ public final class HeaterBlockEntity extends BlockEntity {
     }
 
     public boolean insertFuel(ItemStack stack) {
-        if (stack.isEmpty() || !MelterBlockEntity.isFuel(stack)) {
+        if (stack.isEmpty() || !MelterBlockEntity.isFuel(level, stack)) {
             return false;
         }
         ItemStack stored = fuel.getItem(0);
@@ -62,7 +63,7 @@ public final class HeaterBlockEntity extends BlockEntity {
 
     public int consumeFuel(int requiredTemperature) {
         ItemStack stack = fuel.getItem(0);
-        int burn = MelterBlockEntity.burnTime(stack);
+        int burn = MelterBlockEntity.burnTime(level, stack);
         if (burn <= 0 || MelterBlockEntity.fuelTemperature(stack) < requiredTemperature) {
             return 0;
         }
@@ -95,6 +96,16 @@ public final class HeaterBlockEntity extends BlockEntity {
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
         fuel.fromTag(tag.getList("Fuel", Tag.TAG_COMPOUND), provider);
-        fuelTemperature = tag.getInt("FuelTemperature");
+        ItemStack loadedFuel = fuel.getItem(0);
+        if (!loadedFuel.isEmpty() && !MelterBlockEntity.isFuel(level, loadedFuel)) {
+            fuel.setItem(0, ItemStack.EMPTY);
+        } else if (!loadedFuel.isEmpty()) {
+            loadedFuel.setCount(Math.min(loadedFuel.getCount(), loadedFuel.getMaxStackSize()));
+        }
+        fuelTemperature = Math.max(0, Math.min(MAX_SAVED_TEMPERATURE,
+                tag.getInt("FuelTemperature")));
+        if (fuel.getItem(0).isEmpty()) {
+            fuelTemperature = 0;
+        }
     }
 }

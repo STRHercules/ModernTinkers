@@ -13,6 +13,8 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ public final class TinkerRecipeManager {
     private static final Gson GSON = new Gson();
     private static volatile List<MeltingRecipe> melting = defaultMelting();
     private static volatile List<AlloyRecipe> alloys = defaultAlloys();
+    private static volatile List<FuelRecipe> fuels = defaultFuels();
 
     private static final SimpleJsonResourceReloadListener MELTING_LISTENER =
             new SimpleJsonResourceReloadListener(GSON, "tinkering/melting") {
@@ -61,11 +64,25 @@ public final class TinkerRecipeManager {
                 }
             };
 
+    private static final SimpleJsonResourceReloadListener FUEL_LISTENER =
+            new SimpleJsonResourceReloadListener(GSON, "tinkering/fuels") {
+                @Override
+                protected void apply(Map<ResourceLocation, JsonElement> resources,
+                                     net.minecraft.server.packs.resources.ResourceManager manager,
+                                     ProfilerFiller profiler) {
+                    List<FuelRecipe> loaded = new ArrayList<>();
+                    resources.forEach((location, element) -> appendFuels(loaded, element));
+                    loaded.addAll(defaultFuels());
+                    fuels = List.copyOf(loaded);
+                }
+            };
+
     private TinkerRecipeManager() {}
 
     public static void addReloadListener(AddReloadListenerEvent event) {
         event.addListener(MELTING_LISTENER);
         event.addListener(ALLOY_LISTENER);
+        event.addListener(FUEL_LISTENER);
     }
 
     public static MeltingRecipe findMelting(ItemStack stack) {
@@ -82,6 +99,36 @@ public final class TinkerRecipeManager {
 
     public static List<AlloyRecipe> alloyRecipes() {
         return alloys;
+    }
+
+    /** Finds the first matching fuel profile, with datapack entries taking priority. */
+    public static FuelRecipe findFuel(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return null;
+        }
+        for (FuelRecipe recipe : fuels) {
+            if (recipe.matches(stack)) {
+                return recipe;
+            }
+        }
+        return null;
+    }
+
+    /** Uses an authored duration when present, otherwise the world's vanilla fuel table. */
+    public static int fuelDuration(Level level, ItemStack stack) {
+        FuelRecipe recipe = findFuel(stack);
+        if (recipe != null && recipe.duration() > 0) {
+            return recipe.duration();
+        }
+        return stack.getBurnTime(RecipeType.SMELTING);
+    }
+
+    public static int fuelTemperature(ItemStack stack) {
+        FuelRecipe recipe = findFuel(stack);
+        if (recipe != null && recipe.temperature() > 0) {
+            return recipe.temperature();
+        }
+        return stack.getBurnTime(RecipeType.SMELTING) > 0 ? 800 : 0;
     }
 
     private static void appendMelting(List<MeltingRecipe> target, JsonElement element) {
@@ -165,6 +212,41 @@ public final class TinkerRecipeManager {
         }
     }
 
+    private static void appendFuels(List<FuelRecipe> target, JsonElement element) {
+        if (element.isJsonArray()) {
+            element.getAsJsonArray().forEach(value -> appendFuels(target, value));
+            return;
+        }
+        if (!element.isJsonObject()) {
+            return;
+        }
+        try {
+            JsonObject object = element.getAsJsonObject();
+            List<ItemMatcher> matchers = new ArrayList<>();
+            if (object.has("item")) {
+                addItemMatcher(matchers, object.get("item").getAsString());
+            }
+            if (object.has("items") && object.get("items").isJsonArray()) {
+                object.getAsJsonArray("items").forEach(value -> {
+                    if (value.isJsonPrimitive()) {
+                        addItemMatcher(matchers, value.getAsString());
+                    }
+                });
+            }
+            if (object.has("tag")) {
+                addTagMatcher(matchers, object.get("tag").getAsString());
+            }
+            if (matchers.isEmpty()) {
+                return;
+            }
+            int duration = Math.max(0, GsonHelper.getAsInt(object, "duration", 0));
+            int temperature = Math.max(0, GsonHelper.getAsInt(object, "temperature", 0));
+            target.add(new FuelRecipe(matchers, duration, temperature));
+        } catch (RuntimeException ignored) {
+            // Optional fuel entries must not make a world unloadable.
+        }
+    }
+
     private static void addItemMatcher(List<ItemMatcher> matchers, String id) {
         ResourceLocation location = ResourceLocation.tryParse(id);
         if (location != null) {
@@ -241,6 +323,20 @@ public final class TinkerRecipeManager {
                 taggedMelting("c:ingots/soulsteel", "molten_soulsteel", 90, 20, 1300));
     }
 
+    private static List<FuelRecipe> defaultFuels() {
+        return List.of(
+                fuel("minecraft:lava_bucket", 2000),
+                fuel("minecraft:blaze_rod", 1400),
+                fuel("minecraft:blaze_powder", 1400),
+                fuel("minecraft:coal", 1000),
+                fuel("minecraft:charcoal", 1000));
+    }
+
+    private static FuelRecipe fuel(String itemId, int temperature) {
+        return new FuelRecipe(List.of(ItemMatcher.item(ResourceLocation.parse(itemId))),
+                0, temperature);
+    }
+
     private static MeltingRecipe melting(String itemId, String fluid, int amount,
                                          int time, int temperature) {
         return new MeltingRecipe(List.of(ItemMatcher.item(ResourceLocation.parse(itemId))),
@@ -271,6 +367,12 @@ public final class TinkerRecipeManager {
 
     public record AlloyRecipe(String resultFluid, int resultAmount,
                               List<FluidRequirement> inputs) {}
+
+    public record FuelRecipe(List<ItemMatcher> matchers, int duration, int temperature) {
+        public boolean matches(ItemStack stack) {
+            return matchers.stream().anyMatch(matcher -> matcher.matches(stack));
+        }
+    }
 
     public record FluidRequirement(String fluidId, int amount) {}
 

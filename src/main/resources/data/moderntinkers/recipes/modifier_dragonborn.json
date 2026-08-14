@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {"item": "moderntinkers:dragon_scale"}
+  ],
+  "result": {"id": "moderntinkers:dragonborn"}
+}

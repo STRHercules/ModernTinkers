@@ -14,7 +14,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 
 /** Player inventory menu for the capability-driven alloyer. */
 public final class AlloyerMenu extends AbstractContainerMenu {
+    private static final int FUEL_SLOT = 0;
+    private static final int PLAYER_INVENTORY_START = 1;
+    private static final int PLAYER_INVENTORY_END = 37;
     private final AlloyerBlockEntity blockEntity;
+    private final net.minecraft.world.Container fuel;
     private final ContainerLevelAccess access;
     private final SimpleContainerData data = new SimpleContainerData(1) {
         @Override
@@ -33,8 +37,16 @@ public final class AlloyerMenu extends AbstractContainerMenu {
     private AlloyerMenu(int id, Inventory inventory, AlloyerBlockEntity blockEntity, BlockPos pos) {
         super(SmelteryContent.ALLOYER_MENU.get(), id);
         this.blockEntity = blockEntity;
+        this.fuel = blockEntity == null ? new net.minecraft.world.SimpleContainer(1)
+                : blockEntity.getFuelInventory();
         Level level = blockEntity == null ? null : blockEntity.getLevel();
         this.access = level == null ? ContainerLevelAccess.NULL : ContainerLevelAccess.create(level, pos);
+        addSlot(new Slot(fuel, FUEL_SLOT, 151, 32) {
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return MelterBlockEntity.isFuel(stack);
+            }
+        });
         for (int row = 0; row < 3; ++row) {
             for (int column = 0; column < 9; ++column) {
                 addSlot(new Slot(inventory, column + row * 9 + 9,
@@ -82,16 +94,16 @@ public final class AlloyerMenu extends AbstractContainerMenu {
         }
         ItemStack source = clicked.getItem();
         ItemStack moved = source.copy();
-        // The alloyer is capability-driven; its four fluid tanks are filled
-        // with buckets or pipes through the block interaction. Shift-click
-        // still needs to behave like a normal player-only menu instead of
-        // silently dropping the click on the floor.
-        int playerInventoryEnd = 27;
-        if (index < playerInventoryEnd) {
-            if (!moveItemStackTo(source, playerInventoryEnd, slots.size(), false)) {
+        if (index == FUEL_SLOT) {
+            if (!moveItemStackTo(source, PLAYER_INVENTORY_START, slots.size(), true)) {
                 return ItemStack.EMPTY;
             }
-        } else if (!moveItemStackTo(source, 0, playerInventoryEnd, false)) {
+        } else if (index >= PLAYER_INVENTORY_START
+                && index < PLAYER_INVENTORY_END && MelterBlockEntity.isFuel(source)) {
+            if (!moveItemStackTo(source, FUEL_SLOT, FUEL_SLOT + 1, false)) {
+                return ItemStack.EMPTY;
+            }
+        } else {
             return ItemStack.EMPTY;
         }
         if (source.isEmpty()) {
